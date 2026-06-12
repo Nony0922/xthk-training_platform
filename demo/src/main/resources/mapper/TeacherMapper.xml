@@ -3,6 +3,7 @@
 <mapper namespace="com.example.mapper.TeacherMapper">
     <select id="findAll" resultType="com.example.entity.Teacher">SELECT * FROM teacher ORDER BY id</select>
     <select id="findById" resultType="com.example.entity.Teacher">SELECT * FROM teacher WHERE id = #{id}</select>
+    <select id="findByUserId" resultType="com.example.entity.Teacher">SELECT * FROM teacher WHERE user_id = #{userId} LIMIT 1</select>
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO teacher (user_id, name, gender, phone, email, teacher_level, subject, title, hire_date, status) VALUES (#{userId}, #{name}, #{gender}, #{phone}, #{email}, #{teacherLevel}, #{subject}, #{title}, #{hireDate}, #{status})
     </insert>
