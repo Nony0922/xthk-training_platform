@@ -1,9 +1,0 @@
-<view class="container">
-  <view wx:if="{{list.length===0}}" class="empty">暂无成绩记录</view>
-  <view class="card" wx:for="{{list}}" wx:key="id">
-    <view class="card-title">{{item.studentName}}</view>
-    <view class="card-row"><text class="label">考试</text><text class="value">{{item.examName}}</text></view>
-    <view class="card-row"><text class="label">分数</text><text class="price">{{item.score}}</text></view>
-    <view class="card-row"><text class="label">排名</text><text class="value">{{item.rankNum || '-'}}</text></view>
-  </view>
-</view>

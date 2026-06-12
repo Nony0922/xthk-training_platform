@@ -53,5 +53,6 @@
     ]
   },
   "style": "v2",
+  "functionalPages": false,
   "sitemapLocation": "sitemap.json"
 }

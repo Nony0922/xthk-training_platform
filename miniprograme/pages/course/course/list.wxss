@@ -1,3 +1,0 @@
-@import '../../styles/common.wxss';
-.card-footer { margin-top: 16rpx; text-align: right; }
-.link { color: #7c3aed; font-size: 26rpx; }
