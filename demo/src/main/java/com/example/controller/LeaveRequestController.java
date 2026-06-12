@@ -16,7 +16,13 @@ public class LeaveRequestController {
     private LeaveRequestService leaveRequestService;
 
     @GetMapping("/list")
-    public List<LeaveRequest> findAll() { return leaveRequestService.findAll(); }
+    public List<LeaveRequest> findAll(@RequestParam(required = false) Integer scopeUserId,
+                                      @RequestParam(required = false) Integer teacherLevel) {
+        if (scopeUserId != null && teacherLevel != null) {
+            return leaveRequestService.findAllForTeacher(scopeUserId, teacherLevel);
+        }
+        return leaveRequestService.findAll();
+    }
 
     @GetMapping("/{id}")
     public LeaveRequest findById(@PathVariable Integer id) { return leaveRequestService.findById(id); }

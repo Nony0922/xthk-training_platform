@@ -11,6 +11,7 @@ public interface ClassScheduleMapper {
     ClassSchedule findById(Integer id);
     List<ClassSchedule> findBySemester(@Param("semester") String semester);
     List<String> findSemesters();
+    List<Integer> findClassIdsByTeacherId(@Param("teacherId") Integer teacherId);
     int insert(ClassSchedule entity);
     int update(ClassSchedule entity);
     int deleteById(Integer id);

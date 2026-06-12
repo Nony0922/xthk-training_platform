@@ -102,50 +102,62 @@ const routes = [
         path: 'browse/announcements',
         name: 'AnnouncementBrowse',
         component: AnnouncementManage,
-        meta: { title: '公告浏览', roles: ['teacher'], readOnly: true }
+        meta: { title: '公告浏览', roles: ['teacher'], teacherLevels: [1, 2], readOnly: true }
       },
       {
         path: 'browse/students',
         name: 'StudentBrowse',
         component: StudentManage,
-        meta: { title: '学生浏览', roles: ['teacher'], readOnly: true }
+        meta: { title: '本班学生', roles: ['teacher'], teacherLevels: [2], readOnly: true }
       },
       {
         path: 'browse/parents',
         name: 'ParentBrowse',
         component: ParentManage,
-        meta: { title: '家长浏览', roles: ['teacher'], readOnly: true }
+        meta: { title: '本班家长', roles: ['teacher'], teacherLevels: [2], readOnly: true }
       },
       {
         path: 'browse/courses',
         name: 'CourseBrowse',
         component: CourseManage,
-        meta: { title: '课程浏览', roles: ['teacher'], readOnly: true }
+        meta: { title: '我的课程', roles: ['teacher'], teacherLevels: [1], readOnly: true }
       },
       // 教师 - 管理类
       {
         path: 'teacher/attendance',
         name: 'TeacherAttendance',
         component: AttendanceManage,
-        meta: { title: '考勤管理', roles: ['teacher'] }
+        meta: { title: '本班考勤', roles: ['teacher'], teacherLevels: [2] }
+      },
+      {
+        path: 'teacher/subject/attendance',
+        name: 'TeacherSubjectAttendance',
+        component: AttendanceManage,
+        meta: { title: '授课考勤', roles: ['teacher'], teacherLevels: [1] }
       },
       {
         path: 'teacher/exams',
         name: 'TeacherExam',
         component: ExamManage,
-        meta: { title: '考试管理', roles: ['teacher'] }
+        meta: { title: '考试管理', roles: ['teacher'], teacherLevels: [1] }
       },
       {
         path: 'teacher/scores',
         name: 'TeacherScore',
         component: ScoreManage,
-        meta: { title: '成绩管理', roles: ['teacher'] }
+        meta: { title: '本班成绩', roles: ['teacher'], teacherLevels: [2] }
+      },
+      {
+        path: 'teacher/subject/scores',
+        name: 'TeacherSubjectScore',
+        component: ScoreManage,
+        meta: { title: '授课成绩', roles: ['teacher'], teacherLevels: [1] }
       },
       {
         path: 'teacher/leave',
         name: 'TeacherLeave',
         component: LeaveManage,
-        meta: { title: '请假管理', roles: ['teacher'] }
+        meta: { title: '本班请假', roles: ['teacher'], teacherLevels: [2] }
       }
     ]
   }
@@ -170,9 +182,13 @@ const isValidPcUser = (user) => user && ['admin', 'teacher'].includes(user.role)
 
 export const getDefaultRoute = (user) => {
   if (user?.role === 'admin') return '/home/permission'
-  if (user?.role === 'teacher') return '/home/browse/announcements'
+  if (user?.role === 'teacher') {
+    return user.teacherLevel === 2 ? '/home/browse/students' : '/home/browse/courses'
+  }
   return null
 }
+
+const getTeacherLevel = (user) => (user?.teacherLevel === 2 ? 2 : 1)
 
 router.beforeEach((to) => {
   if (to.meta.title) {
@@ -213,6 +229,14 @@ router.beforeEach((to) => {
     if (to.meta.roles && !to.meta.roles.includes(user.role)) {
       const fallback = getDefaultRoute(user)
       return fallback && to.path !== fallback ? fallback : '/'
+    }
+
+    if (to.meta.teacherLevels && user.role === 'teacher') {
+      const level = getTeacherLevel(user)
+      if (!to.meta.teacherLevels.includes(level)) {
+        const fallback = getDefaultRoute(user)
+        return fallback && to.path !== fallback ? fallback : '/'
+      }
     }
   }
 

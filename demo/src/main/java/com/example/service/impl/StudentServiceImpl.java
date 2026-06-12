@@ -8,11 +8,15 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class StudentServiceImpl implements StudentService {
+public class StudentServiceImpl extends TeacherScopedServiceSupport implements StudentService {
     @Autowired
     private StudentMapper studentMapper;
 
     @Override public List<Student> findAll() { return studentMapper.findAll(); }
+    @Override
+    public List<Student> findAllForTeacher(Integer userId, Integer teacherLevel) {
+        return scopedStudents(studentMapper.findAll(), userId, teacherLevel);
+    }
     @Override public Student findById(Integer id) { return studentMapper.findById(id); }
     @Override public int insert(Student entity) { return studentMapper.insert(entity); }
     @Override public int update(Student entity) { return studentMapper.update(entity); }

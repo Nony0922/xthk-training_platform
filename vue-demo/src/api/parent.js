@@ -1,6 +1,7 @@
 import request from '@/utils/request'
+import { getTeacherScopeParams } from '@/composables/useTeacherScope'
 
-export const getParentListApi = () => request({ url: '/parent/list', method: 'get' })
+export const getParentListApi = () => request({ url: '/parent/list', method: 'get', params: getTeacherScopeParams() })
 export const getParentByIdApi = (id) => request({ url: `/parent/${id}`, method: 'get' })
 export const addParentApi = (data) => request({ url: '/parent/add', method: 'post', data })
 export const updateParentApi = (data) => request({ url: '/parent/update', method: 'put', data })

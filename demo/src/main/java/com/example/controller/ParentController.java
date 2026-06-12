@@ -16,7 +16,13 @@ public class ParentController {
     private ParentService parentService;
 
     @GetMapping("/list")
-    public List<Parent> findAll() { return parentService.findAll(); }
+    public List<Parent> findAll(@RequestParam(required = false) Integer scopeUserId,
+                                @RequestParam(required = false) Integer teacherLevel) {
+        if (scopeUserId != null && teacherLevel != null) {
+            return parentService.findAllForTeacher(scopeUserId, teacherLevel);
+        }
+        return parentService.findAll();
+    }
 
     @GetMapping("/by-user/{userId}")
     public Parent findByUserId(@PathVariable Integer userId) {

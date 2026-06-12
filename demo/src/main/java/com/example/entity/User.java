@@ -20,4 +20,6 @@ public class User {
     private String createTime;
     /** 家长登录时关联的家长表ID（非数据库字段） */
     private Integer parentId;
+    /** 教师登录时关联的教师表ID（非数据库字段） */
+    private Integer teacherId;
 }

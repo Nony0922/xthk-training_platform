@@ -16,7 +16,13 @@ public class ExamController {
     private ExamService examService;
 
     @GetMapping("/list")
-    public List<Exam> findAll() { return examService.findAll(); }
+    public List<Exam> findAll(@RequestParam(required = false) Integer scopeUserId,
+                              @RequestParam(required = false) Integer teacherLevel) {
+        if (scopeUserId != null && teacherLevel != null) {
+            return examService.findAllForTeacher(scopeUserId, teacherLevel);
+        }
+        return examService.findAll();
+    }
 
     @GetMapping("/{id}")
     public Exam findById(@PathVariable Integer id) { return examService.findById(id); }

@@ -3,6 +3,9 @@
 <mapper namespace="com.example.mapper.ClazzMapper">
     <select id="findAll" resultType="com.example.entity.Clazz">SELECT c.*, t.name AS head_teacher_name FROM clazz c LEFT JOIN teacher t ON c.head_teacher_id = t.id ORDER BY c.id</select>
     <select id="findById" resultType="com.example.entity.Clazz">SELECT c.*, t.name AS head_teacher_name FROM clazz c LEFT JOIN teacher t ON c.head_teacher_id = t.id WHERE c.id = #{id}</select>
+    <select id="findIdsByHeadTeacherId" resultType="java.lang.Integer">
+        SELECT id FROM clazz WHERE head_teacher_id = #{headTeacherId}
+    </select>
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO clazz (name, grade, head_teacher_id, room, capacity, description, status) VALUES (#{name}, #{grade}, #{headTeacherId}, #{room}, #{capacity}, #{description}, #{status})
     </insert>

@@ -53,6 +53,12 @@ public class UserServiceImpl implements UserService {
                 }
             }
         }
+        if (user != null && "teacher".equals(user.getRole())) {
+            Teacher teacher = teacherMapper.findByUserId(user.getId());
+            if (teacher != null) {
+                user.setTeacherId(teacher.getId());
+            }
+        }
         return user;
     }
 

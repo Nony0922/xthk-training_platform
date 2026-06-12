@@ -16,7 +16,13 @@ public class StudentController {
     private StudentService studentService;
 
     @GetMapping("/list")
-    public List<Student> findAll() { return studentService.findAll(); }
+    public List<Student> findAll(@RequestParam(required = false) Integer scopeUserId,
+                                 @RequestParam(required = false) Integer teacherLevel) {
+        if (scopeUserId != null && teacherLevel != null) {
+            return studentService.findAllForTeacher(scopeUserId, teacherLevel);
+        }
+        return studentService.findAll();
+    }
 
     @GetMapping("/{id}")
     public Student findById(@PathVariable Integer id) { return studentService.findById(id); }

@@ -40,7 +40,7 @@
         <!-- 教师菜单 -->
         <template v-if="user?.role === 'teacher'">
           <div class="nav-section">
-            <div class="section-label">教师功能</div>
+            <div class="section-label">{{ user.teacherLevel === 2 ? '班主任功能' : '任课教师功能' }}</div>
             <router-link
               v-for="item in teacherMenus"
               :key="item.path"
@@ -99,21 +99,32 @@ const adminSchoolMenus = [
   { path: '/home/schedule-ai', title: 'AI 智能排课', icon: '🤖' }
 ]
 
-const teacherMenus = [
-  { path: '/home/browse/announcements', title: '公告浏览', icon: '📢' },
-  { path: '/home/browse/students', title: '学生浏览', icon: '👨‍🎓' },
-  { path: '/home/browse/parents', title: '家长浏览', icon: '👪' },
-  { path: '/home/browse/courses', title: '课程浏览', icon: '📚' },
-  { path: '/home/teacher/attendance', title: '考勤管理', icon: '✅' },
-  { path: '/home/teacher/exams', title: '考试管理', icon: '📝' },
-  { path: '/home/teacher/scores', title: '成绩管理', icon: '🏆' },
-  { path: '/home/teacher/leave', title: '请假管理', icon: '📋' }
+const headTeacherMenus = [
+  { path: '/home/browse/announcements', title: '公告浏览', icon: '📢', breadcrumb: '班主任' },
+  { path: '/home/browse/students', title: '本班学生', icon: '👨‍🎓', breadcrumb: '班主任' },
+  { path: '/home/browse/parents', title: '本班家长', icon: '👪', breadcrumb: '班主任' },
+  { path: '/home/teacher/leave', title: '本班请假', icon: '📋', breadcrumb: '班主任' },
+  { path: '/home/teacher/attendance', title: '本班考勤', icon: '✅', breadcrumb: '班主任' },
+  { path: '/home/teacher/scores', title: '本班成绩', icon: '🏆', breadcrumb: '班主任' }
 ]
+
+const subjectTeacherMenus = [
+  { path: '/home/browse/announcements', title: '公告浏览', icon: '📢', breadcrumb: '任课教师' },
+  { path: '/home/browse/courses', title: '我的课程', icon: '📚', breadcrumb: '任课教师' },
+  { path: '/home/teacher/exams', title: '考试管理', icon: '📝', breadcrumb: '任课教师' },
+  { path: '/home/teacher/subject/attendance', title: '授课考勤', icon: '✅', breadcrumb: '任课教师' },
+  { path: '/home/teacher/subject/scores', title: '授课成绩', icon: '🏆', breadcrumb: '任课教师' }
+]
+
+const teacherMenus = computed(() => {
+  return user.value?.teacherLevel === 2 ? headTeacherMenus : subjectTeacherMenus
+})
 
 const allRouteTitles = [
   { path: '/home/permission', title: '权限管理', breadcrumb: '权限管理' },
   ...adminSchoolMenus.map(m => ({ ...m, breadcrumb: '学校管理' })),
-  ...teacherMenus.map(m => ({ ...m, breadcrumb: '教师' }))
+  ...headTeacherMenus,
+  ...subjectTeacherMenus
 ]
 
 const user = computed(() => {

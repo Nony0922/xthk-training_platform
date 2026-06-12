@@ -5,6 +5,7 @@ import java.util.List;
 
 public interface ParentService {
     List<Parent> findAll();
+    List<Parent> findAllForTeacher(Integer userId, Integer teacherLevel);
     Parent findById(Integer id);
     Parent findByUserId(Integer userId);
     int insert(Parent entity);

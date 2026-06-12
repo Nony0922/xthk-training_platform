@@ -8,6 +8,7 @@ import java.util.List;
 public interface ClazzMapper {
     List<Clazz> findAll();
     Clazz findById(Integer id);
+    List<Integer> findIdsByHeadTeacherId(Integer headTeacherId);
     int insert(Clazz entity);
     int update(Clazz entity);
     int deleteById(Integer id);

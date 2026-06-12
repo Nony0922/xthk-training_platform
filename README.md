@@ -18,7 +18,7 @@
 
 ## 二、系统完整功能说明
 
-系统共包含 **27 个功能模块**，按使用端与角色划分如下。
+系统共包含 **28 个功能模块**（含 AI 智能排课），按使用端与角色划分如下。
 
 ### 2.1 小程序端（家长）— 共 9 项
 
@@ -65,20 +65,16 @@
 
 ---
 
-### 2.3 PC 端 — 教师 — 共 8 项
+### 2.3 PC 端 — 教师 — 按级别划分（共 8 项能力，菜单不同）
 
-| 功能 | 说明 |
-|------|------|
-| 公告浏览 | 只读查看公告 |
-| 学生浏览 | 只读查看学生信息 |
-| 家长浏览 | 只读查看家长信息 |
-| 课程浏览 | 只读查看课程信息 |
-| 考勤管理 | 录入、维护学生考勤 |
-| 考试管理 | 维护考试安排 |
-| 成绩管理 | 录入、维护学生成绩 |
-| 请假管理 | 处理学生请假申请 |
+教师端与管理端共用页面组件，通过路由 `readOnly` 控制只读。**班主任**与**任课教师**菜单、数据范围、默认首页均不同：
 
-教师端部分浏览类页面与管理端共用组件，通过路由 `readOnly` 控制为只读模式。
+| 教师级别 | 菜单与能力 | 数据范围 |
+|----------|------------|----------|
+| **班主任**（`teacherLevel=2`） | 公告浏览、**本班学生**、**本班家长**、**本班请假**、**本班考勤**、**本班成绩** | 仅 `head_teacher_id` 关联的本班学生及家长 |
+| **任课教师**（`teacherLevel=1`） | 公告浏览、**我的课程**、**考试管理**、**授课考勤**、**授课成绩** | 仅本人授课课程及课表涉及的班级数据 |
+
+测试账号：`teacher1`（班主任）默认进入本班学生；`teacher2`（任课教师）默认进入我的课程。
 
 ---
 
@@ -121,83 +117,93 @@ xthk-training_platform/
 
 ## 四、A、B 分工说明
 
-项目按功能模块平均分为两部分，两人工作量相当。**A 负责平台基础与档案中心（13 个模块），B 负责教学运营与家校服务（14 个模块）。** B 的开发依赖 A 提供的基础数据与登录能力。
+项目按功能模块分为两部分，两人工作量相当：
+
+- **同学 A**：平台基础与档案中心 — 登录鉴权、**权限与用户管理**、人员班级档案、公告留言、小程序登录与个人中心，以及**班主任** PC 端能力与本班数据范围基础。
+- **同学 B**：教学运营与家校服务 — 课程教务、购课订单、家长端聚合 API、**AI 智能排课**，以及**任课教师** PC 端能力与授课数据范围。
+
+**协作关系：** B 依赖 A 提供的用户登录、教师/班级/学生基础数据；A 的班主任数据范围（`TeacherScopeService`）与 B 的教务列表接口（考勤/成绩/请假等）共同实现教师分级功能。
 
 ---
 
-### 4.1 同学 A — 第一部分：平台基础与档案中心（13 个模块）
+### 4.1 同学 A — 第一部分：平台基础与档案中心
 
-**定位：** 搭建系统骨架，完成人员组织、权限、公告与留言基础能力。
+**定位：** 搭建系统骨架，完成人员组织、**权限与用户全生命周期管理**、公告与留言，并定义教师级别与班主任数据范围。
 
 #### 负责的功能模块
 
-| 端 | 模块 |
-|----|------|
-| **小程序（3）** | 用户登录、通知公告浏览、个人信息维护 |
-| **管理员（7）** | 权限管理、公告管理、学生管理、教师管理、家长管理、班级管理、留言管理 |
-| **教师（3）** | 公告浏览、学生浏览、家长浏览 |
+| 端 | 模块 | 说明 |
+|----|------|------|
+| **小程序（3）** | 用户登录、通知公告浏览、个人信息维护 | 家长账号绑定、首页与个人中心 |
+| **管理员（7）** | 权限管理、公告管理、学生管理、教师管理、家长管理、班级管理、留言管理 | **权限管理含用户增删改查**；班级管理配置班主任（`head_teacher_id`） |
+| **教师 — 班主任（3）** | 公告浏览、本班学生、本班家长 | 只读浏览，**仅本班数据** |
+| **共建能力** | 教师级别与数据范围 | `TeacherScopeService`：班主任按本班、任课教师按授课班级过滤（供 B 教务接口复用） |
 
 #### 主要代码范围
 
 **后端 `demo/`**
 
-- 公共基础：`DemoApplication.java`、`application.yaml`、`training.sql`、`fix_parent_bind.sql`
-- 业务模块：User、Teacher、Student、Parent、Clazz、Announcement、Message
+- 公共基础：`DemoApplication.java`、`application.yaml`、`training.sql`
+- 用户与权限：`User`（含 `teacherLevel`、`teacherId` 登录扩展）、`UserController`（用户 CRUD）、`UserServiceImpl`
+- 档案模块：`Teacher`、`Student`、`Parent`、`Clazz`、`Announcement`、`Message` 及对应 Mapper/Service/Controller
+- 教师范围：`TeacherScopeService`、`TeacherScopedServiceSupport`、班级/课表班级 ID 查询（`ClazzMapper.findIdsByHeadTeacherId` 等）
 
 **PC 端 `vue-demo/`**
 
-- 框架：`main.js`、`App.vue`、`router/index.js`（初版）、`utils/request.js`
-- 页面：Login、Home、PermissionManage、TeacherManage、StudentManage、ParentManage、ClassManage、AnnouncementManage、MessageManage
-- API：user、teacher、student、parent、clazz、announcement、message
+- 框架：`main.js`、`App.vue`、`router/index.js`（教师 `teacherLevels` 路由守卫）、`utils/request.js`
+- 页面：`Login`、`Home`（班主任 / 任课教师分菜单）、`PermissionManage`（**增删改查**）、`TeacherManage`、`StudentManage`、`ParentManage`、`ClassManage`、`AnnouncementManage`、`MessageManage`
+- 公共：`composables/useTeacherScope.js`；API：`user`、`teacher`、`student`、`parent`、`clazz`、`announcement`、`message`
 
 **小程序 `miniprograme/`**
 
 - 公共：`app.js`、`app.json`、`app.wxss`、`utils/*`、`styles/common.wxss`
-- 页面：login、index（首页）、announcement/list、profile
+- 页面：`login`、`index`（首页）、`announcement/list`、`profile`
 
-#### Git 提交
+#### Git 提交建议
 
 ```
-feat(part1): 上传平台基础与档案管理模块
+feat(part1): 平台基础、权限用户管理、档案中心与班主任数据范围
 ```
 
 ---
 
-### 4.2 同学 B — 第二部分：教学运营与家校服务（14 个模块）
+### 4.2 同学 B — 第二部分：教学运营与家校服务
 
-**定位：** 完成课程、教务、购课及家长端业务浏览，实现三端业务闭环。
+**定位：** 完成课程、教务、购课及家长端业务浏览，实现三端业务闭环；负责**AI 智能排课**与**任课教师** PC 端菜单及授课侧数据过滤。
 
 #### 负责的功能模块
 
-| 端 | 模块 |
-|----|------|
-| **小程序（6）** | 课程购买、课程浏览、课程表浏览、考勤浏览、成绩浏览、留言 |
-| **管理员（3）** | 课程管理、考试管理、考勤管理 |
-| **教师（5）** | 课程浏览、考勤管理、考试管理、成绩管理、请假管理 |
+| 端 | 模块 | 说明 |
+|----|------|------|
+| **小程序（6）** | 课程购买、课程浏览、课程表浏览、考勤浏览、成绩浏览、留言 | 家长端业务浏览与购课 |
+| **管理员（4）** | 课程管理、考试管理、考勤管理、**AI 智能排课** | 课表冲突检测 + 讯飞星火建议 + 可视化周课表 |
+| **教师 — 任课教师（5）** | 公告浏览、我的课程、考试管理、授课考勤、授课成绩 | **仅本人课程与授课班级数据** |
+| **共建能力** | 班主任教务页面 | 本班请假、本班考勤、本班成绩（复用 B 页面，经 A 的 `TeacherScope` 过滤） |
 
 #### 主要代码范围
 
 **后端 `demo/`**
 
 - 家长端聚合 API：`ParentAppController`、`ParentAppService`、`ParentAppServiceImpl`
-- 业务模块：Course、Exam、Score、Attendance、LeaveRequest、ClassSchedule、CourseOrder
-- 扩展模块：AbnormalAttendance、HomeVisit、TeachingProgress
+- 教务模块：`Course`、`Exam`、`Score`、`Attendance`、`LeaveRequest`、`ClassSchedule`、`CourseOrder`（列表接口支持 `scopeUserId` + `teacherLevel` 过滤）
+- 扩展模块：`AbnormalAttendance`、`HomeVisit`、`TeachingProgress`
+- **AI 排课**：`ScheduleAiController`、`ScheduleAiService`、`SparkAiService`、`SparkProperties`、`application-local.yaml.example`
 
 **PC 端 `vue-demo/`**
 
-- 页面：CourseManage、ExamManage、AttendanceManage、ScoreManage、LeaveManage、ScheduleManage、ProgressManage、CourseOrderManage、HomeVisitManage、AbnormalAttendanceManage
-- API：course、exam、attendance、score、leave、schedule、progress、courseOrder、homeVisit、abnormalAttendance
-- 共享更新：`router/index.js`（完整路由）、`Home.vue`（完整菜单）
+- 页面：`CourseManage`、`ExamManage`、`AttendanceManage`、`ScoreManage`、`LeaveManage`、`ScheduleManage`、`ScheduleAiAssistant`、`ProgressManage`、`CourseOrderManage` 等
+- API：`course`、`exam`、`attendance`、`score`、`leave`、`schedule`、`scheduleAi` 等（教师端自动附带范围参数）
+- 共享更新：`router/index.js`（任课 / 班主任分路由）、`Home.vue`（分菜单）
 
 **小程序 `miniprograme/`**
 
-- 页面：course、order、schedule、attendance、exam、score、message
+- 页面：`course`、`order`、`schedule`、`attendance`、`exam`、`score`、`message`
 - 共享更新：`app.json`、首页 `pages/index/*`
 
-#### Git 提交
+#### Git 提交建议
 
 ```
-feat(part2): 上传教学运营与家长服务模块
+feat(part2): 教学运营、家长服务、AI 智能排课与任课教师功能
 ```
 
 ---
@@ -206,11 +212,34 @@ feat(part2): 上传教学运营与家长服务模块
 
 | 对比项 | 同学 A（第一部分） | 同学 B（第二部分） |
 |--------|-------------------|-------------------|
-| 模块数量 | 13 个 | 14 个 |
-| 业务重心 | 登录、权限、人员档案、公告 | 课程、教务、购课、家长端浏览 |
-| 后端难点 | 登录与家长账号绑定 | ParentApp 聚合 API、订单支付 |
+| 核心职责 | 谁能登录、管哪些人、管哪个班 | 教什么课、怎么排课、家长看什么 |
+| 管理员侧重 | 权限用户 CRUD、人员班级档案、留言公告 | 课程考试考勤、**AI 智能排课** |
+| 教师 PC — 班主任 | 本班学生 / 家长浏览；班级与 `head_teacher_id` 配置 | 本班请假 / 考勤 / 成绩（页面与接口，数据由 A 的范围服务过滤） |
+| 教师 PC — 任课教师 | — | 我的课程、考试、授课考勤 / 成绩（按授课班级与课程过滤） |
+| 后端关键点 | 登录扩展字段、`User` CRUD、`TeacherScopeService` | `ParentApp` 聚合 API、订单支付、星火 API、`/schedule/ai/*` |
 | 小程序 | 登录、首页、公告、个人中心 | 课程、订单、课表、考勤、成绩、留言 |
-| 依赖关系 | 先完成，供 B 使用 | 依赖 A 的基础数据与登录 |
+| 依赖关系 | **先完成**，提供用户/班级/教师基础数据 | 依赖 A 的登录与档案数据；与 A **共建**教师分级过滤 |
+
+### 4.4 教师级别 — 二人协作边界（答辩可参考）
+
+```
+                    ┌─────────────────────────────────────┐
+                    │           同学 A 负责               │
+                    │  用户角色、教师级别字段、班级班主任   │
+                    │  TeacherScopeService（本班/授课范围）│
+                    └─────────────────┬───────────────────┘
+                                      │ 范围参数 scopeUserId + teacherLevel
+                    ┌─────────────────▼───────────────────┐
+                    │           同学 B 负责               │
+                    │  教务 CRUD 接口 + 教师端列表过滤    │
+                    │  任课教师菜单路由 + AI 智能排课      │
+                    └─────────────────────────────────────┘
+```
+
+| 登录账号 | 级别 | 谁主要实现 | 登录后看到什么 |
+|----------|------|------------|----------------|
+| `teacher1` | 班主任 | A 菜单 + B 本班教务页 | 本班学生、家长、请假、考勤、成绩 |
+| `teacher2` | 任课教师 | B 菜单 + B 授课过滤 | 我的课程、考试、授课考勤、成绩 |
 
 ---
 
@@ -282,8 +311,8 @@ npm run dev
 | 用户名 | 密码 | 角色 | 使用端 |
 |--------|------|------|--------|
 | admin | 123456 | 管理员 | PC |
-| teacher1 | 123456 | 班主任 | PC |
-| teacher2 | 123456 | 任课教师 | PC |
+| teacher1 | 123456 | 班主任（本班管理） | PC |
+| teacher2 | 123456 | 任课教师（授课管理） | PC |
 | parent1 | 123456 | 家长 | 小程序 |
 
 ---
@@ -302,8 +331,10 @@ npm run dev
 | 提交 | 说明 | 负责人 |
 |------|------|--------|
 | `chore: add gitignore` | 添加忽略规则 | 共同 |
-| `feat(part1): 上传平台基础与档案管理模块` | 第一部分代码 | 同学 A |
-| `feat(part2): 上传教学运营与家长服务模块` | 第二部分代码 | 同学 B |
+| `feat(part1): 平台基础、权限用户管理、档案中心与班主任数据范围` | 第一部分代码 | 同学 A |
+| `feat(part2): 教学运营、家长服务、AI 智能排课与任课教师功能` | 第二部分代码 | 同学 B |
+| `feat: AI 智能排课助手` | 星火 API、冲突检测、可视化课表（管理员） | 同学 B |
+| `feat: 教师分级菜单与数据范围` | 班主任 / 任课教师分权（A+B 协作） | 共同 |
 
 ---
 

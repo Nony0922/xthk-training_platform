@@ -16,7 +16,13 @@ public class AttendanceController {
     private AttendanceService attendanceService;
 
     @GetMapping("/list")
-    public List<Attendance> findAll() { return attendanceService.findAll(); }
+    public List<Attendance> findAll(@RequestParam(required = false) Integer scopeUserId,
+                                    @RequestParam(required = false) Integer teacherLevel) {
+        if (scopeUserId != null && teacherLevel != null) {
+            return attendanceService.findAllForTeacher(scopeUserId, teacherLevel);
+        }
+        return attendanceService.findAll();
+    }
 
     @GetMapping("/{id}")
     public Attendance findById(@PathVariable Integer id) { return attendanceService.findById(id); }

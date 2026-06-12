@@ -16,7 +16,13 @@ public class ScoreController {
     private ScoreService scoreService;
 
     @GetMapping("/list")
-    public List<Score> findAll() { return scoreService.findAll(); }
+    public List<Score> findAll(@RequestParam(required = false) Integer scopeUserId,
+                                @RequestParam(required = false) Integer teacherLevel) {
+        if (scopeUserId != null && teacherLevel != null) {
+            return scoreService.findAllForTeacher(scopeUserId, teacherLevel);
+        }
+        return scoreService.findAll();
+    }
 
     @GetMapping("/{id}")
     public Score findById(@PathVariable Integer id) { return scoreService.findById(id); }
