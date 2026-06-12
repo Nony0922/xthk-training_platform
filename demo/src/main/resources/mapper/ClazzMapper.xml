@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.ClazzMapper">
+    <select id="findAll" resultType="com.example.entity.Clazz">SELECT c.*, t.name AS head_teacher_name FROM clazz c LEFT JOIN teacher t ON c.head_teacher_id = t.id ORDER BY c.id</select>
+    <select id="findById" resultType="com.example.entity.Clazz">SELECT c.*, t.name AS head_teacher_name FROM clazz c LEFT JOIN teacher t ON c.head_teacher_id = t.id WHERE c.id = #{id}</select>
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO clazz (name, grade, head_teacher_id, room, capacity, description, status) VALUES (#{name}, #{grade}, #{headTeacherId}, #{room}, #{capacity}, #{description}, #{status})
+    </insert>
+    <update id="update">
+        UPDATE clazz SET name=#{name}, grade=#{grade}, head_teacher_id=#{headTeacherId}, room=#{room}, capacity=#{capacity}, description=#{description}, status=#{status} WHERE id = #{id}
+    </update>
+    <delete id="deleteById">
+        DELETE FROM clazz WHERE id = #{id}
+    </delete>
+</mapper>

@@ -1,0 +1,57 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/login/login",
+    "pages/announcement/list",
+    "pages/course/list",
+    "pages/course/detail",
+    "pages/order/list",
+    "pages/order/detail",
+    "pages/schedule/list",
+    "pages/attendance/list",
+    "pages/exam/list",
+    "pages/score/list",
+    "pages/message/list",
+    "pages/profile/profile"
+  ],
+  "window": {
+    "navigationBarTitleText": "心田花开",
+    "navigationBarBackgroundColor": "#7c3aed",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#f5f3ff"
+  },
+  "tabBar": {
+    "color": "#9ca3af",
+    "selectedColor": "#7c3aed",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页",
+        "iconPath": "assets/icons/home.png",
+        "selectedIconPath": "assets/icons/home-active.png"
+      },
+      {
+        "pagePath": "pages/course/list",
+        "text": "课程",
+        "iconPath": "assets/icons/course.png",
+        "selectedIconPath": "assets/icons/course-active.png"
+      },
+      {
+        "pagePath": "pages/order/list",
+        "text": "订单",
+        "iconPath": "assets/icons/order.png",
+        "selectedIconPath": "assets/icons/order-active.png"
+      },
+      {
+        "pagePath": "pages/profile/profile",
+        "text": "我的",
+        "iconPath": "assets/icons/my.png",
+        "selectedIconPath": "assets/icons/my-active.png"
+      }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

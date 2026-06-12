@@ -1,0 +1,10 @@
+.login-page { min-height: 100vh; background: linear-gradient(160deg, #7c3aed 0%, #5b21b6 40%, #f5f3ff 40%); padding: 80rpx 40rpx; box-sizing: border-box; }
+.header { text-align: center; color: #fff; margin-bottom: 60rpx; }
+.logo { font-size: 80rpx; margin-bottom: 16rpx; }
+.title { display: block; font-size: 48rpx; font-weight: 700; }
+.subtitle { display: block; font-size: 26rpx; opacity: 0.85; margin-top: 8rpx; }
+.form-card { background: #fff; border-radius: 24rpx; padding: 48rpx 40rpx; box-shadow: 0 16rpx 48rpx rgba(124,58,237,0.15); }
+.form-item { margin-bottom: 32rpx; }
+.label { display: block; font-size: 26rpx; color: #6b7280; margin-bottom: 12rpx; }
+.input { height: 88rpx; background: #f9fafb; border-radius: 12rpx; padding: 0 24rpx; border: 2rpx solid #e5e7eb; }
+.btn-login { margin-top: 16rpx; background: linear-gradient(135deg, #7c3aed, #6d28d9); color: #fff; border-radius: 12rpx; height: 88rpx; line-height: 88rpx; font-size: 32rpx; }

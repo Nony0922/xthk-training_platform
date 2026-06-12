@@ -1,0 +1,21 @@
+<view class="container">
+  <view class="welcome-card">
+    <text class="welcome">您好，{{user.name || '家长'}}</text>
+    <text class="welcome-sub">心田花开培训机构 · 家长服务</text>
+  </view>
+
+  <view class="section-title">功能服务</view>
+  <view class="menu-grid">
+    <view class="menu-item" wx:for="{{menus}}" wx:key="name" bindtap="goPage" data-url="{{item.url}}">
+      <view class="menu-icon">{{item.icon}}</view>
+      <text class="menu-text">{{item.name}}</text>
+    </view>
+  </view>
+
+  <view class="section-title">最新公告</view>
+  <view wx:if="{{announcements.length === 0}}" class="empty">暂无公告</view>
+  <view class="card" wx:for="{{announcements}}" wx:key="id" bindtap="goAnnouncement">
+    <view class="card-title">{{item.title}}</view>
+    <view class="card-desc">{{item.publishTime || item.createTime}}</view>
+  </view>
+</view>

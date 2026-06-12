@@ -1,0 +1,12 @@
+const weekdays = ['', '周一', '周二', '周三', '周四', '周五', '周六', '周日']
+const attendStatus = ['', '正常', '迟到', '早退', '缺勤', '请假']
+const orderStatus = ['待支付', '已支付', '已取消']
+const examStatus = ['未开始', '进行中', '已结束']
+
+module.exports = {
+  weekday: (n) => weekdays[n] || '-',
+  attend: (n) => attendStatus[n] || '-',
+  order: (n) => orderStatus[n] || '-',
+  exam: (n) => examStatus[n] || '-',
+  msg: (n) => (n === 1 ? '已回复' : '待回复')
+}

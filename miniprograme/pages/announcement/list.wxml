@@ -1,0 +1,9 @@
+<view class="container">
+  <view wx:if="{{list.length===0}}" class="empty">暂无公告</view>
+  <view class="card" wx:for="{{list}}" wx:key="id">
+    <view class="card-title">{{item.title}}</view>
+    <view class="card-desc">{{item.content}}</view>
+    <view class="card-row"><text class="label">发布人</text><text class="value">{{item.publisherName || '-'}}</text></view>
+    <view class="card-row"><text class="label">时间</text><text class="value">{{item.publishTime || item.createTime}}</text></view>
+  </view>
+</view>

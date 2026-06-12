@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.StudentMapper">
+    <select id="findAll" resultType="com.example.entity.Student">SELECT s.*, c.name AS class_name, p.name AS parent_name FROM student s LEFT JOIN clazz c ON s.class_id = c.id LEFT JOIN parent p ON s.parent_id = p.id ORDER BY s.id</select>
+    <select id="findById" resultType="com.example.entity.Student">SELECT s.*, c.name AS class_name, p.name AS parent_name FROM student s LEFT JOIN clazz c ON s.class_id = c.id LEFT JOIN parent p ON s.parent_id = p.id WHERE s.id = #{id}</select>
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO student (name, gender, birthday, phone, class_id, parent_id, enroll_date, status) VALUES (#{name}, #{gender}, #{birthday}, #{phone}, #{classId}, #{parentId}, #{enrollDate}, #{status})
+    </insert>
+    <update id="update">
+        UPDATE student SET name=#{name}, gender=#{gender}, birthday=#{birthday}, phone=#{phone}, class_id=#{classId}, parent_id=#{parentId}, enroll_date=#{enrollDate}, status=#{status} WHERE id = #{id}
+    </update>
+    <delete id="deleteById">
+        DELETE FROM student WHERE id = #{id}
+    </delete>
+</mapper>

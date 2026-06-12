@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.AnnouncementMapper">
+    <select id="findAll" resultType="com.example.entity.Announcement">SELECT * FROM announcement ORDER BY id</select>
+    <select id="findById" resultType="com.example.entity.Announcement">SELECT * FROM announcement WHERE id = #{id}</select>
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO announcement (title, content, publisher_id, publisher_name, target_role, status, publish_time) VALUES (#{title}, #{content}, #{publisherId}, #{publisherName}, #{targetRole}, #{status}, #{publishTime})
+    </insert>
+    <update id="update">
+        UPDATE announcement SET title=#{title}, content=#{content}, publisher_id=#{publisherId}, publisher_name=#{publisherName}, target_role=#{targetRole}, status=#{status}, publish_time=#{publishTime} WHERE id = #{id}
+    </update>
+    <delete id="deleteById">
+        DELETE FROM announcement WHERE id = #{id}
+    </delete>
+</mapper>

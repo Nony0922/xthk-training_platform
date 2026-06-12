@@ -1,0 +1,18 @@
+<view class="login-page">
+  <view class="header">
+    <view class="logo">🌸</view>
+    <text class="title">心田花开</text>
+    <text class="subtitle">家长端小程序</text>
+  </view>
+  <view class="form-card">
+    <view class="form-item">
+      <text class="label">用户名</text>
+      <input class="input" placeholder="请输入用户名" value="{{username}}" bindinput="onUserInput" />
+    </view>
+    <view class="form-item">
+      <text class="label">密码</text>
+      <input class="input" password placeholder="请输入密码" value="{{password}}" bindinput="onPwdInput" />
+    </view>
+    <button class="btn-login" loading="{{loading}}" bindtap="onLogin">登 录</button>
+  </view>
+</view>

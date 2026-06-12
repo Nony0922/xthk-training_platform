@@ -1,0 +1,48 @@
+<view class="container">
+  <view class="profile-header">
+    <view class="avatar">{{user.name ? user.name[0] : '家'}}</view>
+    <text class="name">{{user.name}}</text>
+    <text class="role">家长账号 · {{user.username}}</text>
+  </view>
+
+  <view class="card" wx:if="{{profile}}">
+    <view class="card-title">个人信息维护</view>
+    <view class="form-item">
+      <text class="label">姓名</text>
+      <input class="input" value="{{form.name}}" bindinput="onField" data-key="name" />
+    </view>
+    <view class="form-item">
+      <text class="label">电话</text>
+      <input class="input" value="{{form.phone}}" bindinput="onField" data-key="phone" />
+    </view>
+    <view class="form-item">
+      <text class="label">邮箱</text>
+      <input class="input" value="{{form.email}}" bindinput="onField" data-key="email" />
+    </view>
+    <view class="form-item">
+      <text class="label">地址</text>
+      <input class="input" value="{{form.address}}" bindinput="onField" data-key="address" />
+    </view>
+    <button class="btn-primary" bindtap="save">保存信息</button>
+  </view>
+
+  <view class="card">
+    <view class="card-title">关联学生</view>
+    <view wx:if="{{students.length===0}}" class="empty">暂无关联学生</view>
+    <view class="card-row" wx:for="{{students}}" wx:key="id">
+      <text class="value">{{item.name}}</text>
+      <text class="label">{{item.className || '未分班'}}</text>
+    </view>
+  </view>
+
+  <view class="menu-list">
+    <view class="menu-link" bindtap="go" data-url="/pages/announcement/list">通知公告浏览</view>
+    <view class="menu-link" bindtap="go" data-url="/pages/schedule/list">课程表浏览</view>
+    <view class="menu-link" bindtap="go" data-url="/pages/attendance/list">考勤信息浏览</view>
+    <view class="menu-link" bindtap="go" data-url="/pages/exam/list">考试安排浏览</view>
+    <view class="menu-link" bindtap="go" data-url="/pages/score/list">考试成绩浏览</view>
+    <view class="menu-link" bindtap="go" data-url="/pages/message/list">留言</view>
+  </view>
+
+  <button class="btn-logout" bindtap="logout">退出登录</button>
+</view>
