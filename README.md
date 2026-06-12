@@ -38,7 +38,7 @@
 
 ---
 
-### 2.2 PC 端 — 管理员 — 共 10 项
+### 2.2 PC 端 — 管理员 — 共 11 项
 
 #### 权限管理（1 项）
 
@@ -46,7 +46,7 @@
 |------|------|
 | 权限管理 | 系统用户增删改查，分配角色（管理员 / 教师 / 家长）及教师级别 |
 
-#### 学校管理（9 项）
+#### 学校管理（10 项）
 
 | 功能 | 说明 |
 |------|------|
@@ -59,8 +59,9 @@
 | 课程管理 | 课程信息维护、上下架 |
 | 考试管理 | 考试安排维护 |
 | 考勤管理 | 学生考勤记录维护 |
+| **AI 智能排课** | 基于教师时间、教室容量、学生人数进行冲突检测，调用讯飞星火大模型生成优化建议，可视化周课表展示 |
 
-> 仓库中还包含课表、教学进度、课程订单、家访、异常考勤等管理页面源码，部分尚未接入 PC 端菜单路由。
+> 仓库中还包含课表 CRUD、教学进度、课程订单、家访、异常考勤等管理页面源码；其中 **AI 智能排课** 已接入管理员菜单。
 
 ---
 
@@ -87,6 +88,7 @@
 - 家长端聚合 API（`/app/*`）：按家长 ID 过滤学生、课表、考勤、成绩、订单等数据
 - 登录鉴权：返回用户角色及 `parentId` / `teacherLevel` 等扩展字段
 - 课程订单：自动生成订单号、模拟支付流程
+- **AI 智能排课**（`/schedule/ai/*`）：规则引擎检测教师/教室/容量冲突，调用讯飞星火 HTTP API 生成排课建议
 
 ---
 
@@ -236,10 +238,27 @@ demo/src/main/resources/training.sql
 ```bash
 cd demo
 # 修改 src/main/resources/application.yaml 中的数据库用户名和密码
+# 配置讯飞星火 API（AI 智能排课助手）：
+#   复制 application-local.yaml.example 为 application-local.yaml
+#   填入控制台 http 服务接口认证信息中的 APIPassword
 mvn spring-boot:run
 ```
 
 后端地址：`http://localhost:8080`
+
+**AI 排课配置说明**
+
+1. 登录 [讯飞开放平台](https://console.xfyun.cn/) → 我的应用 → 进入已创建应用
+2. 在 **http 服务接口认证信息** 中复制 **APIPassword**
+3. 创建 `demo/src/main/resources/application-local.yaml`：
+
+```yaml
+spark:
+  api-password: 你的APIPassword
+```
+
+4. 管理员登录 PC 端 → **学校管理 → AI 智能排课** → 点击「AI 智能分析」
+5. 初始数据中 `2025春季` 学期含一条教师时间冲突（张老师周一 09:00 段重叠），便于演示
 
 **3. 启动 PC 前端**
 
@@ -271,10 +290,10 @@ npm run dev
 
 ## 七、注意事项
 
-1. **不要提交** `node_modules/`、`demo/target/`、`.idea/` 等（已在 `.gitignore` 中配置）
+1. **不要提交** `node_modules/`、`demo/target/`、`.idea/`、`application-local.yaml` 等（已在 `.gitignore` 中配置）
 2. PC 端家长账号会提示「请使用小程序端访问」
 3. 小程序 TabBar 图标需本地生成，未纳入版本库
-4. 部分 PC 管理页面（课表、进度、订单等）已有源码，菜单路由待后续接入
+4. 未配置 `spark.api-password` 时，AI 排课仍可使用规则引擎检测冲突，但不会调用大模型生成建议
 
 ---
 

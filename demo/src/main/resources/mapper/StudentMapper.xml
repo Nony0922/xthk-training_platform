@@ -3,6 +3,9 @@
 <mapper namespace="com.example.mapper.StudentMapper">
     <select id="findAll" resultType="com.example.entity.Student">SELECT s.*, c.name AS class_name, p.name AS parent_name FROM student s LEFT JOIN clazz c ON s.class_id = c.id LEFT JOIN parent p ON s.parent_id = p.id ORDER BY s.id</select>
     <select id="findById" resultType="com.example.entity.Student">SELECT s.*, c.name AS class_name, p.name AS parent_name FROM student s LEFT JOIN clazz c ON s.class_id = c.id LEFT JOIN parent p ON s.parent_id = p.id WHERE s.id = #{id}</select>
+    <select id="countByClassId" resultType="java.util.HashMap">
+        SELECT class_id AS classId, COUNT(*) AS count FROM student WHERE class_id IS NOT NULL AND status = 1 GROUP BY class_id
+    </select>
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO student (name, gender, birthday, phone, class_id, parent_id, enroll_date, status) VALUES (#{name}, #{gender}, #{birthday}, #{phone}, #{classId}, #{parentId}, #{enrollDate}, #{status})
     </insert>

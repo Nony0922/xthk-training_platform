@@ -95,7 +95,8 @@ const adminSchoolMenus = [
   { path: '/home/classes', title: '班级管理', icon: '🏫' },
   { path: '/home/courses', title: '课程管理', icon: '📚' },
   { path: '/home/exams', title: '考试管理', icon: '📝' },
-  { path: '/home/attendance', title: '考勤管理', icon: '✅' }
+  { path: '/home/attendance', title: '考勤管理', icon: '✅' },
+  { path: '/home/schedule-ai', title: 'AI 智能排课', icon: '🤖' }
 ]
 
 const teacherMenus = [

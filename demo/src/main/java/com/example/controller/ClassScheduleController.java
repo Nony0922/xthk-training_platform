@@ -18,7 +18,7 @@ public class ClassScheduleController {
     @GetMapping("/list")
     public List<ClassSchedule> findAll() { return classScheduleService.findAll(); }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{id:\\d+}")
     public ClassSchedule findById(@PathVariable Integer id) { return classScheduleService.findById(id); }
 
     @PostMapping("/add")
@@ -39,7 +39,7 @@ public class ClassScheduleController {
         return result;
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{id:\\d+}")
     public Map<String, Object> deleteById(@PathVariable Integer id) {
         Map<String, Object> result = new HashMap<>();
         int r = classScheduleService.deleteById(id);

@@ -290,7 +290,8 @@ INSERT INTO class_schedule (class_id, course_id, teacher_id, weekday, start_time
 (1, 1, 1, 1, '09:00:00', '10:30:00', 'A101', '2025春季'),
 (1, 1, 1, 3, '09:00:00', '10:30:00', 'A101', '2025春季'),
 (2, 2, 2, 2, '14:00:00', '15:30:00', 'B203', '2025春季'),
-(2, 2, 2, 4, '14:00:00', '15:30:00', 'B203', '2025春季');
+(2, 2, 2, 4, '14:00:00', '15:30:00', 'B203', '2025春季'),
+(2, 3, 1, 1, '09:30:00', '11:00:00', 'C305', '2025春季');
 
 INSERT INTO teaching_progress (class_id, course_id, teacher_id, chapter, content, planned_date, actual_date, status) VALUES
 (1, 1, 1, '第一单元', '拼音入门与基础识字', '2025-03-01', '2025-03-01', 2),

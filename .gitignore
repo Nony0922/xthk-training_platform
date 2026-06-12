@@ -1,6 +1,9 @@
 # 后端编译产物
 demo/target/
 
+# 本地密钥配置
+demo/src/main/resources/application-local.yaml
+
 # 前端依赖和打包
 vue-demo/node_modules/
 vue-demo/dist/

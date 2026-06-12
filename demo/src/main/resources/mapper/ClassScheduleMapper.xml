@@ -3,6 +3,18 @@
 <mapper namespace="com.example.mapper.ClassScheduleMapper">
     <select id="findAll" resultType="com.example.entity.ClassSchedule">SELECT cs.*, cl.name AS class_name, co.name AS course_name, t.name AS teacher_name FROM class_schedule cs LEFT JOIN clazz cl ON cs.class_id = cl.id LEFT JOIN course co ON cs.course_id = co.id LEFT JOIN teacher t ON cs.teacher_id = t.id ORDER BY cs.id</select>
     <select id="findById" resultType="com.example.entity.ClassSchedule">SELECT cs.*, cl.name AS class_name, co.name AS course_name, t.name AS teacher_name FROM class_schedule cs LEFT JOIN clazz cl ON cs.class_id = cl.id LEFT JOIN course co ON cs.course_id = co.id LEFT JOIN teacher t ON cs.teacher_id = t.id WHERE cs.id = #{id}</select>
+    <select id="findBySemester" resultType="com.example.entity.ClassSchedule">
+        SELECT cs.*, cl.name AS class_name, co.name AS course_name, t.name AS teacher_name
+        FROM class_schedule cs
+        LEFT JOIN clazz cl ON cs.class_id = cl.id
+        LEFT JOIN course co ON cs.course_id = co.id
+        LEFT JOIN teacher t ON cs.teacher_id = t.id
+        WHERE cs.semester = #{semester}
+        ORDER BY cs.weekday, cs.start_time
+    </select>
+    <select id="findSemesters" resultType="java.lang.String">
+        SELECT DISTINCT semester FROM class_schedule WHERE semester IS NOT NULL AND semester != '' ORDER BY semester DESC
+    </select>
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO class_schedule (class_id, course_id, teacher_id, weekday, start_time, end_time, room, semester) VALUES (#{classId}, #{courseId}, #{teacherId}, #{weekday}, #{startTime}, #{endTime}, #{room}, #{semester})
     </insert>

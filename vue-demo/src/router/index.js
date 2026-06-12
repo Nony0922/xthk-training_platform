@@ -14,6 +14,7 @@ const ExamManage = () => import('@/views/ExamManage.vue')
 const AttendanceManage = () => import('@/views/AttendanceManage.vue')
 const ScoreManage = () => import('@/views/ScoreManage.vue')
 const LeaveManage = () => import('@/views/LeaveManage.vue')
+const ScheduleAiAssistant = () => import('@/views/ScheduleAiAssistant.vue')
 
 const routes = [
   {
@@ -89,6 +90,12 @@ const routes = [
         name: 'AttendanceManage',
         component: AttendanceManage,
         meta: { title: '考勤管理', roles: ['admin'], group: 'school' }
+      },
+      {
+        path: 'schedule-ai',
+        name: 'ScheduleAiAssistant',
+        component: ScheduleAiAssistant,
+        meta: { title: 'AI 智能排课', roles: ['admin'], group: 'school' }
       },
       // 教师 - 浏览类
       {
