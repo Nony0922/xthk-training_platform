@@ -1,0 +1,10 @@
+<view class="container">
+  <view wx:if="{{list.length===0}}" class="empty">暂无考勤记录</view>
+  <view class="card" wx:for="{{list}}" wx:key="id">
+    <view class="card-title">{{item.studentName}}</view>
+    <view class="card-row"><text class="label">班级</text><text class="value">{{item.className}}</text></view>
+    <view class="card-row"><text class="label">课程</text><text class="value">{{item.courseName}}</text></view>
+    <view class="card-row"><text class="label">日期</text><text class="value">{{item.attendDate}}</text></view>
+    <view class="card-row"><text class="label">状态</text><text class="tag tag-purple">{{item.statusText}}</text></view>
+  </view>
+</view>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.ExamMapper">
+    <select id="findAll" resultType="com.example.entity.Exam">SELECT e.*, co.name AS course_name, cl.name AS class_name FROM exam e LEFT JOIN course co ON e.course_id = co.id LEFT JOIN clazz cl ON e.class_id = cl.id ORDER BY e.id</select>
+    <select id="findById" resultType="com.example.entity.Exam">SELECT e.*, co.name AS course_name, cl.name AS class_name FROM exam e LEFT JOIN course co ON e.course_id = co.id LEFT JOIN clazz cl ON e.class_id = cl.id WHERE e.id = #{id}</select>
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO exam (name, course_id, class_id, exam_date, start_time, end_time, location, total_score, status, remark) VALUES (#{name}, #{courseId}, #{classId}, #{examDate}, #{startTime}, #{endTime}, #{location}, #{totalScore}, #{status}, #{remark})
+    </insert>
+    <update id="update">
+        UPDATE exam SET name=#{name}, course_id=#{courseId}, class_id=#{classId}, exam_date=#{examDate}, start_time=#{startTime}, end_time=#{endTime}, location=#{location}, total_score=#{totalScore}, status=#{status}, remark=#{remark} WHERE id = #{id}
+    </update>
+    <delete id="deleteById">
+        DELETE FROM exam WHERE id = #{id}
+    </delete>
+</mapper>

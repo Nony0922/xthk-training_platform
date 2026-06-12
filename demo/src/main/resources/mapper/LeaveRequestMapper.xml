@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.LeaveRequestMapper">
+    <select id="findAll" resultType="com.example.entity.LeaveRequest">SELECT lr.*, st.name AS student_name FROM leave_request lr LEFT JOIN student st ON lr.student_id = st.id ORDER BY lr.id</select>
+    <select id="findById" resultType="com.example.entity.LeaveRequest">SELECT lr.*, st.name AS student_name FROM leave_request lr LEFT JOIN student st ON lr.student_id = st.id WHERE lr.id = #{id}</select>
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO leave_request (student_id, applicant_id, applicant_name, leave_type, start_date, end_date, reason, status, approver_id, approve_time, remark) VALUES (#{studentId}, #{applicantId}, #{applicantName}, #{leaveType}, #{startDate}, #{endDate}, #{reason}, #{status}, #{approverId}, #{approveTime}, #{remark})
+    </insert>
+    <update id="update">
+        UPDATE leave_request SET student_id=#{studentId}, applicant_id=#{applicantId}, applicant_name=#{applicantName}, leave_type=#{leaveType}, start_date=#{startDate}, end_date=#{endDate}, reason=#{reason}, status=#{status}, approver_id=#{approverId}, approve_time=#{approveTime}, remark=#{remark} WHERE id = #{id}
+    </update>
+    <delete id="deleteById">
+        DELETE FROM leave_request WHERE id = #{id}
+    </delete>
+</mapper>

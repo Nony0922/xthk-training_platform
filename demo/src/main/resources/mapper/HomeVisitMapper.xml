@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.HomeVisitMapper">
+    <select id="findAll" resultType="com.example.entity.HomeVisit">SELECT hv.*, st.name AS student_name, t.name AS teacher_name FROM home_visit hv LEFT JOIN student st ON hv.student_id = st.id LEFT JOIN teacher t ON hv.teacher_id = t.id ORDER BY hv.id</select>
+    <select id="findById" resultType="com.example.entity.HomeVisit">SELECT hv.*, st.name AS student_name, t.name AS teacher_name FROM home_visit hv LEFT JOIN student st ON hv.student_id = st.id LEFT JOIN teacher t ON hv.teacher_id = t.id WHERE hv.id = #{id}</select>
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO home_visit (student_id, teacher_id, visit_date, visit_type, content, feedback, next_plan) VALUES (#{studentId}, #{teacherId}, #{visitDate}, #{visitType}, #{content}, #{feedback}, #{nextPlan})
+    </insert>
+    <update id="update">
+        UPDATE home_visit SET student_id=#{studentId}, teacher_id=#{teacherId}, visit_date=#{visitDate}, visit_type=#{visitType}, content=#{content}, feedback=#{feedback}, next_plan=#{nextPlan} WHERE id = #{id}
+    </update>
+    <delete id="deleteById">
+        DELETE FROM home_visit WHERE id = #{id}
+    </delete>
+</mapper>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.ClassScheduleMapper">
+    <select id="findAll" resultType="com.example.entity.ClassSchedule">SELECT cs.*, cl.name AS class_name, co.name AS course_name, t.name AS teacher_name FROM class_schedule cs LEFT JOIN clazz cl ON cs.class_id = cl.id LEFT JOIN course co ON cs.course_id = co.id LEFT JOIN teacher t ON cs.teacher_id = t.id ORDER BY cs.id</select>
+    <select id="findById" resultType="com.example.entity.ClassSchedule">SELECT cs.*, cl.name AS class_name, co.name AS course_name, t.name AS teacher_name FROM class_schedule cs LEFT JOIN clazz cl ON cs.class_id = cl.id LEFT JOIN course co ON cs.course_id = co.id LEFT JOIN teacher t ON cs.teacher_id = t.id WHERE cs.id = #{id}</select>
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO class_schedule (class_id, course_id, teacher_id, weekday, start_time, end_time, room, semester) VALUES (#{classId}, #{courseId}, #{teacherId}, #{weekday}, #{startTime}, #{endTime}, #{room}, #{semester})
+    </insert>
+    <update id="update">
+        UPDATE class_schedule SET class_id=#{classId}, course_id=#{courseId}, teacher_id=#{teacherId}, weekday=#{weekday}, start_time=#{startTime}, end_time=#{endTime}, room=#{room}, semester=#{semester} WHERE id = #{id}
+    </update>
+    <delete id="deleteById">
+        DELETE FROM class_schedule WHERE id = #{id}
+    </delete>
+</mapper>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.TeachingProgressMapper">
+    <select id="findAll" resultType="com.example.entity.TeachingProgress">SELECT tp.*, cl.name AS class_name, co.name AS course_name, t.name AS teacher_name FROM teaching_progress tp LEFT JOIN clazz cl ON tp.class_id = cl.id LEFT JOIN course co ON tp.course_id = co.id LEFT JOIN teacher t ON tp.teacher_id = t.id ORDER BY tp.id</select>
+    <select id="findById" resultType="com.example.entity.TeachingProgress">SELECT tp.*, cl.name AS class_name, co.name AS course_name, t.name AS teacher_name FROM teaching_progress tp LEFT JOIN clazz cl ON tp.class_id = cl.id LEFT JOIN course co ON tp.course_id = co.id LEFT JOIN teacher t ON tp.teacher_id = t.id WHERE tp.id = #{id}</select>
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO teaching_progress (class_id, course_id, teacher_id, chapter, content, planned_date, actual_date, status, remark) VALUES (#{classId}, #{courseId}, #{teacherId}, #{chapter}, #{content}, #{plannedDate}, #{actualDate}, #{status}, #{remark})
+    </insert>
+    <update id="update">
+        UPDATE teaching_progress SET class_id=#{classId}, course_id=#{courseId}, teacher_id=#{teacherId}, chapter=#{chapter}, content=#{content}, planned_date=#{plannedDate}, actual_date=#{actualDate}, status=#{status}, remark=#{remark} WHERE id = #{id}
+    </update>
+    <delete id="deleteById">
+        DELETE FROM teaching_progress WHERE id = #{id}
+    </delete>
+</mapper>

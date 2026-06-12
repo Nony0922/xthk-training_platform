@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.ScoreMapper">
+    <select id="findAll" resultType="com.example.entity.Score">SELECT sc.*, e.name AS exam_name, st.name AS student_name FROM score sc LEFT JOIN exam e ON sc.exam_id = e.id LEFT JOIN student st ON sc.student_id = st.id ORDER BY sc.id</select>
+    <select id="findById" resultType="com.example.entity.Score">SELECT sc.*, e.name AS exam_name, st.name AS student_name FROM score sc LEFT JOIN exam e ON sc.exam_id = e.id LEFT JOIN student st ON sc.student_id = st.id WHERE sc.id = #{id}</select>
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO score (exam_id, student_id, score, rank_num, remark) VALUES (#{examId}, #{studentId}, #{score}, #{rankNum}, #{remark})
+    </insert>
+    <update id="update">
+        UPDATE score SET exam_id=#{examId}, student_id=#{studentId}, score=#{score}, rank_num=#{rankNum}, remark=#{remark} WHERE id = #{id}
+    </update>
+    <delete id="deleteById">
+        DELETE FROM score WHERE id = #{id}
+    </delete>
+</mapper>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.AbnormalAttendanceMapper">
+    <select id="findAll" resultType="com.example.entity.AbnormalAttendance">SELECT aa.*, st.name AS student_name FROM abnormal_attendance aa LEFT JOIN student st ON aa.student_id = st.id ORDER BY aa.id</select>
+    <select id="findById" resultType="com.example.entity.AbnormalAttendance">SELECT aa.*, st.name AS student_name FROM abnormal_attendance aa LEFT JOIN student st ON aa.student_id = st.id WHERE aa.id = #{id}</select>
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO abnormal_attendance (attendance_id, student_id, abnormal_type, description, handle_status, handle_result, handler_id, handle_time) VALUES (#{attendanceId}, #{studentId}, #{abnormalType}, #{description}, #{handleStatus}, #{handleResult}, #{handlerId}, #{handleTime})
+    </insert>
+    <update id="update">
+        UPDATE abnormal_attendance SET attendance_id=#{attendanceId}, student_id=#{studentId}, abnormal_type=#{abnormalType}, description=#{description}, handle_status=#{handleStatus}, handle_result=#{handleResult}, handler_id=#{handlerId}, handle_time=#{handleTime} WHERE id = #{id}
+    </update>
+    <delete id="deleteById">
+        DELETE FROM abnormal_attendance WHERE id = #{id}
+    </delete>
+</mapper>
