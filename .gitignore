@@ -1,0 +1,17 @@
+# 后端编译产物
+demo/target/
+
+# 前端依赖和打包
+vue-demo/node_modules/
+vue-demo/dist/
+
+# IDE
+.idea/
+*.iml
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# 小程序本地生成图标（可选）
+miniprograme/assets/icons/
