@@ -1,0 +1,2 @@
+# xthk-training_platform
+此仓库为心田花开培训机构综合管理平台的代码仓库
