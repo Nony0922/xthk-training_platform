@@ -296,16 +296,4 @@ public class ParentAppServiceImpl implements ParentAppService {
     public List<LearningReport> getLearningReports(Integer parentId) {
         return learningReportService.listForParent(parentId);
     }
-
-    @Override
-    public LearningReport getLearningReportDetail(Integer parentId, Integer reportId) {
-        LearningReport report = learningReportService.listForParent(parentId).stream()
-                .filter(r -> Objects.equals(r.getId(), reportId))
-                .findFirst()
-                .orElse(null);
-        if (report == null) {
-            return null;
-        }
-        return report;
-    }
 }

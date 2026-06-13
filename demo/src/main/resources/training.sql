@@ -288,20 +288,29 @@ CREATE TABLE learning_report (
 
 -- ========== 初始数据 ==========
 
--- 系统用户：admin/teacher1(班主任)/teacher2(任课)/parent1
+-- 系统用户：admin/teacher1(班主任)/teacher2(任课)/parent1~parent4
 INSERT INTO sys_user (username, password, name, role, teacher_level, phone) VALUES
 ('admin', '123456', '教务处管理员', 'admin', NULL, '13800000001'),
 ('teacher1', '123456', '张老师', 'teacher', 2, '13800000002'),
 ('teacher2', '123456', '李老师', 'teacher', 1, '13800000003'),
-('parent1', '123456', '王家长', 'parent', NULL, '13800000004');
+('parent1', '123456', '王家长', 'parent', NULL, '13800000004'),
+('parent2', '123456', '李家长', 'parent', NULL, '13800000005'),
+('parent3', '123456', '陈家长', 'parent', NULL, '13800000006'),
+('parent4', '123456', '张家长', 'parent', NULL, '13800000007');
 
 INSERT INTO teacher (user_id, name, gender, phone, teacher_level, subject, title, hire_date) VALUES
 (2, '张老师', 1, '13800000002', 2, '语文', '高级教师', '2020-09-01'),
 (3, '李老师', 2, '13800000003', 1, '数学', '中级教师', '2021-03-01');
 
 INSERT INTO parent (user_id, name, phone, address)
-SELECT id, '王家长', '13800000004', '成都市武侯区' FROM sys_user WHERE username = 'parent1';
--- 家长账号 parent1 已绑定家长档案；以下学生均关联该家长（多孩家庭演示）
+SELECT id, '王家长', '13800000004', '成都市武侯区天府大道100号' FROM sys_user WHERE username = 'parent1'
+UNION ALL
+SELECT id, '李家长', '13800000005', '成都市锦江区春熙路88号' FROM sys_user WHERE username = 'parent2'
+UNION ALL
+SELECT id, '陈家长', '13800000006', '成都市青羊区宽窄巷子66号' FROM sys_user WHERE username = 'parent3'
+UNION ALL
+SELECT id, '张家长', '13800000007', '成都市高新区天府三街200号' FROM sys_user WHERE username = 'parent4';
+-- 家长账号已绑定档案；每位家长最多关联 2 名学生（多孩家庭演示见 parent1）
 
 INSERT INTO clazz (name, grade, head_teacher_id, room, capacity, description) VALUES
 ('一年级1班', '一年级', 1, 'A101', 30, '语文基础班'),
@@ -312,15 +321,15 @@ SELECT '王小明', 1, '2018-05-12', 1, p.id, '2024-09-01' FROM parent p WHERE p
 UNION ALL
 SELECT '李小红', 2, '2017-08-20', 2, p.id, '2024-09-01' FROM parent p WHERE p.phone = '13800000004'
 UNION ALL
-SELECT '陈小华', 2, '2018-03-08', 1, p.id, '2024-09-01' FROM parent p WHERE p.phone = '13800000004'
+SELECT '陈小华', 2, '2018-03-08', 1, p.id, '2024-09-01' FROM parent p WHERE p.phone = '13800000005'
 UNION ALL
-SELECT '赵小强', 1, '2018-07-15', 1, p.id, '2024-09-01' FROM parent p WHERE p.phone = '13800000004'
+SELECT '赵小强', 1, '2018-07-15', 1, p.id, '2024-09-01' FROM parent p WHERE p.phone = '13800000005'
 UNION ALL
-SELECT '刘小丽', 2, '2018-01-22', 1, p.id, '2024-09-01' FROM parent p WHERE p.phone = '13800000004'
+SELECT '刘小丽', 2, '2018-01-22', 1, p.id, '2024-09-01' FROM parent p WHERE p.phone = '13800000006'
 UNION ALL
-SELECT '周小杰', 1, '2018-11-05', 1, p.id, '2024-09-01' FROM parent p WHERE p.phone = '13800000004'
+SELECT '周小杰', 1, '2018-11-05', 1, p.id, '2024-09-01' FROM parent p WHERE p.phone = '13800000006'
 UNION ALL
-SELECT '张小洋', 1, '2017-04-18', 2, p.id, '2024-09-01' FROM parent p WHERE p.phone = '13800000004';
+SELECT '张小洋', 1, '2017-04-18', 2, p.id, '2024-09-01' FROM parent p WHERE p.phone = '13800000007';
 
 INSERT INTO course (name, description, teacher_id, hours, fee, status, target_grade, subject, teach_mode, location, valid_start, valid_end, class_time_desc, max_students, enrolled_count, suitable_age, highlights) VALUES
 ('小学语文基础', '面向一年级学生的语文基础课程，系统培养拼音、识字、阅读与写作能力，小班制互动教学。', 1, 48, 3600.00, 1, '一年级', '语文', 1, 'A101 教室（武侯校区）', '2025-03-01', '2025-06-30', '每周一、三 09:00-10:30', 30, 12, '6-7岁', '拼音启蒙|课外阅读|写作训练|小班互动'),
@@ -432,12 +441,21 @@ INSERT INTO home_visit (student_id, teacher_id, visit_date, visit_type, content,
 (1, 1, '2025-02-20', 2, '电话了解学生在家学习情况', '家长反馈孩子阅读兴趣较高', '建议增加课外阅读');
 
 INSERT INTO message (parent_id, content, status)
-SELECT p.id, '请问下周课程是否有调整？', 0 FROM parent p WHERE p.phone = '13800000004';
+SELECT p.id, '请问下周课程是否有调整？', 0 FROM parent p WHERE p.phone = '13800000004'
+UNION ALL
+SELECT p.id, '赵小强最近数学作业完成情况如何？', 0 FROM parent p WHERE p.phone = '13800000005'
+UNION ALL
+SELECT p.id, '周小杰能否申请调课？', 1 FROM parent p WHERE p.phone = '13800000006';
 
 INSERT INTO course_order (order_no, parent_id, course_id, course_name, teacher_name, hours, fee, status)
 SELECT 'ORD20250301001', p.id, 1, '小学语文基础', '张老师', 48, 3600.00, 1 FROM parent p WHERE p.phone = '13800000004'
 UNION ALL
-SELECT 'ORD20250315002', p.id, 3, '英语口语启蒙', '李老师', 24, 1800.00, 0 FROM parent p WHERE p.phone = '13800000004';
+SELECT 'ORD20250315002', p.id, 3, '英语口语启蒙', '李老师', 24, 1800.00, 0 FROM parent p WHERE p.phone = '13800000004'
+UNION ALL
+SELECT 'ORD20250320003', p.id, 1, '小学语文基础', '张老师', 48, 3600.00, 1 FROM parent p WHERE p.phone = '13800000005'
+UNION ALL
+SELECT 'ORD20250322004', p.id, 2, '小学数学提高', '李老师', 36, 2800.00, 0 FROM parent p WHERE p.phone = '13800000007';
 
--- 说明：本文件为唯一数据库脚本，包含建库、建表及全部初始/演示数据（含 AI 学情分析、家长绑定、多孩家庭等）。
+-- 说明：本文件为唯一数据库脚本，包含建库、建表及全部初始/演示数据（含 AI 学情分析、家长绑定、多家长多孩家庭等）。
+-- 家长与学生：parent1 王小明+李小红；parent2 陈小华+赵小强；parent3 刘小丽+周小杰；parent4 张小洋（每位家长最多 2 孩）。
 -- 使用方式：在 MySQL 中完整执行本文件即可，无需再执行其他 SQL 脚本。

@@ -16,8 +16,7 @@ mybatis:
   configuration:
     map-underscore-to-camel-case: true
 
-# 讯飞星火大模型（AI 智能排课助手）
-# 请在控制台 http 服务接口认证信息中获取 APIPassword 并填入下方
+# 讯飞星火大模型
 spark:
   api-password: ${SPARK_API_PASSWORD:}
   api-url: https://spark-api-open.xf-yun.com/v1/chat/completions
