@@ -316,6 +316,7 @@ INSERT INTO announcement (title, content, publisher_id, publisher_name, target_r
 INSERT INTO exam (name, course_id, class_id, exam_date, start_time, end_time, location, total_score, status) VALUES
 ('语文期中考试', 1, 1, '2025-04-15', '09:00:00', '10:30:00', 'A101', 100, 0),
 ('数学单元测试', 2, 2, '2025-04-10', '14:00:00', '15:00:00', 'B203', 100, 0);
+-- 注：status 入库值仅供参考，接口返回时由 ExamStatusUtil 按日期时间自动计算
 
 INSERT INTO score (exam_id, student_id, score, rank_num) VALUES
 (1, 1, 92.5, 1),

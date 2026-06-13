@@ -23,15 +23,17 @@ Page({
       const groups = groupByStudentClass(
         students,
         exams,
-        e => ({
+        e => {
+          const status = fmt.examResolve(e)
+          return {
           examDate: e.examDate || '-',
           name: e.name || '-',
           courseName: e.courseName || '-',
           timeText: trimTime(e.startTime) + ' - ' + trimTime(e.endTime),
           location: e.location || '-',
-          statusText: fmt.exam(e.status),
-          statusClass: fmt.examClass(e.status)
-        }),
+          statusText: fmt.exam(status),
+          statusClass: fmt.examClass(status)
+        }},
         (a, b) => (a.examDate || '').localeCompare(b.examDate || '')
       )
       const count = (students || []).length

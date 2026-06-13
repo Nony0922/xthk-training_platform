@@ -72,6 +72,19 @@ module.exports = {
   leaveStatus: (n) => ['待审批', '已通过', '已驳回', '已撤回'][n] || '-',
   attendClass: (n) => ['', 'tag-green', 'tag-orange', 'tag-orange', 'tag-red', 'tag-purple'][n] || 'tag-gray',
   examClass: (n) => ['tag-orange', 'tag-green', 'tag-gray'][n] || 'tag-gray',
+  /** 根据考试日期时间计算状态（与后端 ExamStatusUtil 规则一致） */
+  examResolve: (exam) => {
+    if (!exam || !exam.examDate) return exam?.status ?? 0
+    const now = new Date()
+    const dateStr = exam.examDate.substring(0, 10)
+    const startStr = exam.startTime ? exam.startTime.substring(0, 5) : '00:00'
+    const endStr = exam.endTime ? exam.endTime.substring(0, 5) : '23:59'
+    const start = new Date(dateStr + 'T' + startStr + ':00')
+    const end = new Date(dateStr + 'T' + endStr + ':00')
+    if (now < start) return 0
+    if (now > end) return 2
+    return 1
+  },
   teachMode,
   teachModeShort,
   teachModeClass,

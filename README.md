@@ -84,7 +84,7 @@
 | 教师级别 | 菜单与能力 | 数据范围 |
 |----------|------------|----------|
 | **班主任**（`teacherLevel=2`） | 公告浏览、**本班学生**、**本班家长**、**本班请假**、**本班考勤**、**本班成绩** | 仅 `head_teacher_id` 关联的本班学生及家长；**本班请假**为审批家长提交的申请 |
-| **任课教师**（`teacherLevel=1`） | 公告浏览、**我的课程**、**考试管理**、**授课考勤**、**授课成绩** | 仅本人授课课程及课表涉及的班级数据 |
+| **任课教师**（`teacherLevel=1`） | 公告浏览、**我的课程**、**考试管理**、**授课考勤**、**授课成绩** | 本人**任课课程**及课表涉及班级；考试列表按「授课班级 **或** 本人课程」匹配 |
 
 测试账号：`teacher1`（班主任）默认进入本班学生；`teacher2`（任课教师）默认进入我的课程。
 
@@ -96,6 +96,7 @@
 - 家长端聚合 API（`/app/*`）：按家长 ID 过滤学生、课表、考勤、成绩、订单、请假等
 - **课程模型扩展**（`Course`）：`targetGrade`、`subject`、`teachMode`（线下/线上/混合）、`location`、`validStart` / `validEnd`、`classTimeDesc`、`maxStudents` / `enrolledCount`、`suitableAge`、`highlights`
 - **购课校验**（`CourseService.validatePurchasable`）：上架状态、有效期、名额；支付成功后 `incrementEnrolledCount`
+- **考试状态**（`ExamStatusUtil`）：根据 `examDate` + `startTime` / `endTime` 与当前时间自动判定未开始 / 进行中 / 已结束
 - **订单接口**：
   - 创建 `POST /app/parent/order`
   - 支付 `PUT /app/parent/order/{id}/pay`

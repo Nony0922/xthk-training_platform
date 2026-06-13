@@ -77,11 +77,7 @@
           </div>
           <div class="form-item">
             <label>状态</label>
-            <select v-model="form.status">
-            <option :value="0">未开始</option>
-            <option :value="1">进行中</option>
-            <option :value="2">已结束</option>
-          </select>
+            <input type="text" readonly value="根据考试日期与时间自动判定（未开始/进行中/已结束）" />
           </div>
           <div class="form-item">
             <label>备注</label>
