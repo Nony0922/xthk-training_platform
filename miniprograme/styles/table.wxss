@@ -1,0 +1,127 @@
+.page-tip {
+  background: #ede9fe;
+  color: #5b21b6;
+  font-size: 24rpx;
+  padding: 16rpx 24rpx;
+  border-radius: 12rpx;
+  margin-bottom: 24rpx;
+  line-height: 1.5;
+}
+
+.student-section {
+  background: #fff;
+  border-radius: 16rpx;
+  margin-bottom: 28rpx;
+  overflow: hidden;
+  box-shadow: 0 4rpx 20rpx rgba(124, 58, 237, 0.08);
+}
+
+.student-header {
+  display: flex;
+  align-items: center;
+  padding: 24rpx 28rpx;
+  background: linear-gradient(135deg, #7c3aed, #6d28d9);
+  color: #fff;
+}
+
+.student-avatar {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32rpx;
+  font-weight: 700;
+  margin-right: 20rpx;
+  flex-shrink: 0;
+}
+
+.student-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.student-name {
+  display: block;
+  font-size: 32rpx;
+  font-weight: 600;
+}
+
+.student-class {
+  display: block;
+  font-size: 24rpx;
+  opacity: 0.85;
+  margin-top: 6rpx;
+}
+
+.record-count {
+  font-size: 24rpx;
+  opacity: 0.9;
+  flex-shrink: 0;
+}
+
+.table-wrap {
+  padding: 0 16rpx 16rpx;
+  overflow-x: auto;
+}
+
+.table-header,
+.table-row {
+  display: flex;
+  align-items: center;
+  min-width: 100%;
+}
+
+.table-header {
+  background: #f9fafb;
+  border-radius: 8rpx;
+  margin-top: 16rpx;
+  padding: 16rpx 8rpx;
+  border-bottom: 2rpx solid #e5e7eb;
+}
+
+.table-row {
+  padding: 18rpx 8rpx;
+  border-bottom: 1rpx solid #f3f4f6;
+  font-size: 24rpx;
+}
+
+.table-row:last-child {
+  border-bottom: none;
+}
+
+.table-row:nth-child(even) {
+  background: #fafafa;
+}
+
+.th {
+  color: #6b7280;
+  font-weight: 600;
+  font-size: 22rpx;
+  text-align: center;
+  flex-shrink: 0;
+  word-break: break-all;
+}
+
+.td {
+  color: #374151;
+  text-align: center;
+  flex-shrink: 0;
+  word-break: break-all;
+  line-height: 1.4;
+}
+
+.section-empty {
+  text-align: center;
+  padding: 40rpx 0;
+  color: #9ca3af;
+  font-size: 26rpx;
+}
+
+.td-score {
+  color: #7c3aed;
+  font-weight: 700;
+  font-size: 28rpx;
+}

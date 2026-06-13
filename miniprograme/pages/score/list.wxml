@@ -1,9 +1,31 @@
 <view class="container">
-  <view wx:if="{{list.length===0}}" class="empty">暂无成绩记录</view>
-  <view class="card" wx:for="{{list}}" wx:key="id">
-    <view class="card-title">{{item.studentName}}</view>
-    <view class="card-row"><text class="label">考试</text><text class="value">{{item.examName}}</text></view>
-    <view class="card-row"><text class="label">分数</text><text class="price">{{item.score}}</text></view>
-    <view class="card-row"><text class="label">排名</text><text class="value">{{item.rankNum || '-'}}</text></view>
+  <view wx:if="{{studentCount > 0}}" class="page-tip">{{tip}}</view>
+
+  <view wx:if="{{studentCount === 0}}" class="empty">暂无关联学生</view>
+  <view wx:elif="{{!hasData}}" class="empty">暂无成绩记录</view>
+
+  <view class="student-section" wx:for="{{groups}}" wx:key="studentId">
+    <view class="student-header">
+      <view class="student-avatar">{{item.studentName[0]}}</view>
+      <view class="student-info">
+        <text class="student-name">{{item.studentName}}</text>
+        <text class="student-class">{{item.className}}</text>
+      </view>
+      <text class="record-count">{{item.rows.length}} 科</text>
+    </view>
+
+    <view wx:if="{{item.rows.length === 0}}" class="section-empty">暂无成绩记录</view>
+    <view wx:else class="table-wrap">
+      <view class="table-header">
+        <text class="th col-exam">考试名称</text>
+        <text class="th col-score">分数</text>
+        <text class="th col-rank">排名</text>
+      </view>
+      <view class="table-row" wx:for="{{item.rows}}" wx:for-item="row" wx:key="index">
+        <text class="td col-exam">{{row.examName}}</text>
+        <text class="td col-score td-score">{{row.score}}</text>
+        <text class="td col-rank">{{row.rankNum}}</text>
+      </view>
+    </view>
   </view>
 </view>

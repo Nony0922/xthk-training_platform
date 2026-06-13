@@ -1,1 +1,11 @@
 @import '../../styles/common.wxss';
+@import '../../styles/table.wxss';
+
+.col-exam { flex: 2; text-align: left; padding-left: 8rpx; }
+.col-score { flex: 1; }
+.col-rank { flex: 1; }
+
+.table-header .col-exam {
+  text-align: left;
+  padding-left: 8rpx;
+}

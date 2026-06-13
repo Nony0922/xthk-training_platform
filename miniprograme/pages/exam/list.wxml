@@ -1,12 +1,41 @@
 <view class="container">
-  <view wx:if="{{list.length===0}}" class="empty">暂无考试安排</view>
-  <view class="card" wx:for="{{list}}" wx:key="id">
-    <view class="card-title">{{item.name}}</view>
-    <view class="card-row"><text class="label">课程</text><text class="value">{{item.courseName}}</text></view>
-    <view class="card-row"><text class="label">班级</text><text class="value">{{item.className}}</text></view>
-    <view class="card-row"><text class="label">日期</text><text class="value">{{item.examDate}}</text></view>
-    <view class="card-row"><text class="label">时间</text><text class="value">{{item.startTime}} - {{item.endTime}}</text></view>
-    <view class="card-row"><text class="label">地点</text><text class="value">{{item.location || '-'}}</text></view>
-    <view class="card-row"><text class="label">状态</text><text class="value">{{item.statusText}}</text></view>
+  <view wx:if="{{studentCount > 0}}" class="page-tip">{{tip}}</view>
+
+  <view wx:if="{{studentCount === 0}}" class="empty">暂无关联学生</view>
+  <view wx:elif="{{!hasData}}" class="empty">暂无考试安排</view>
+
+  <view class="student-section" wx:for="{{groups}}" wx:key="studentId">
+    <view class="student-header">
+      <view class="student-avatar">{{item.studentName[0]}}</view>
+      <view class="student-info">
+        <text class="student-name">{{item.studentName}}</text>
+        <text class="student-class">{{item.className}}</text>
+      </view>
+      <text class="record-count">{{item.rows.length}} 场</text>
+    </view>
+
+    <view wx:if="{{item.rows.length === 0}}" class="section-empty">该班级暂无考试安排</view>
+    <scroll-view wx:else scroll-x class="table-wrap" enhanced show-scrollbar="{{false}}">
+      <view class="table-inner">
+        <view class="table-header">
+          <text class="th col-date">日期</text>
+          <text class="th col-exam">考试名称</text>
+          <text class="th col-course">课程</text>
+          <text class="th col-time">时间</text>
+          <text class="th col-loc">地点</text>
+          <text class="th col-status">状态</text>
+        </view>
+        <view class="table-row" wx:for="{{item.rows}}" wx:for-item="row" wx:key="index">
+          <text class="td col-date">{{row.examDate}}</text>
+          <text class="td col-exam">{{row.name}}</text>
+          <text class="td col-course">{{row.courseName}}</text>
+          <text class="td col-time">{{row.timeText}}</text>
+          <text class="td col-loc">{{row.location}}</text>
+          <view class="td col-status">
+            <text class="tag {{row.statusClass}}">{{row.statusText}}</text>
+          </view>
+        </view>
+      </view>
+    </scroll-view>
   </view>
 </view>

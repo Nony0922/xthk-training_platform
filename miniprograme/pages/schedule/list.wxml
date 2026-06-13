@@ -1,12 +1,39 @@
 <view class="container">
-  <view wx:if="{{list.length===0}}" class="empty">暂无课程表信息</view>
-  <view class="card" wx:for="{{list}}" wx:key="id">
-    <view class="card-title">{{item.courseName}}</view>
-    <view class="card-row"><text class="label">班级</text><text class="value">{{item.className}}</text></view>
-    <view class="card-row"><text class="label">教师</text><text class="value">{{item.teacherName}}</text></view>
-    <view class="card-row"><text class="label">星期</text><text class="value">{{item.weekdayText}}</text></view>
-    <view class="card-row"><text class="label">时间</text><text class="value">{{item.startTime}} - {{item.endTime}}</text></view>
-    <view class="card-row"><text class="label">教室</text><text class="value">{{item.room || '-'}}</text></view>
-    <view class="card-row"><text class="label">学期</text><text class="value">{{item.semester || '-'}}</text></view>
+  <view wx:if="{{studentCount > 0}}" class="page-tip">{{tip}}</view>
+
+  <view wx:if="{{studentCount === 0}}" class="empty">暂无关联学生</view>
+  <view wx:elif="{{!hasData}}" class="empty">暂无课程表信息</view>
+
+  <view class="student-section" wx:for="{{groups}}" wx:key="studentId">
+    <view class="student-header">
+      <view class="student-avatar">{{item.studentName[0]}}</view>
+      <view class="student-info">
+        <text class="student-name">{{item.studentName}}</text>
+        <text class="student-class">{{item.className}}</text>
+      </view>
+      <text class="record-count">{{item.rows.length}} 节课</text>
+    </view>
+
+    <view wx:if="{{item.rows.length === 0}}" class="section-empty">该班级暂无课程安排</view>
+    <scroll-view wx:else scroll-x class="table-wrap" enhanced show-scrollbar="{{false}}">
+      <view class="table-inner">
+        <view class="table-header">
+          <text class="th col-week">星期</text>
+          <text class="th col-time">时间</text>
+          <text class="th col-course">课程</text>
+          <text class="th col-teacher">教师</text>
+          <text class="th col-room">教室</text>
+          <text class="th col-sem">学期</text>
+        </view>
+        <view class="table-row" wx:for="{{item.rows}}" wx:for-item="row" wx:key="index">
+          <text class="td col-week">{{row.weekdayText}}</text>
+          <text class="td col-time">{{row.timeText}}</text>
+          <text class="td col-course">{{row.courseName}}</text>
+          <text class="td col-teacher">{{row.teacherName}}</text>
+          <text class="td col-room">{{row.room}}</text>
+          <text class="td col-sem">{{row.semester}}</text>
+        </view>
+      </view>
+    </scroll-view>
   </view>
 </view>

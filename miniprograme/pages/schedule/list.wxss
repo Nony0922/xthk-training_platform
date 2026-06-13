@@ -1,1 +1,13 @@
 @import '../../styles/common.wxss';
+@import '../../styles/table.wxss';
+
+.table-inner {
+  min-width: 920rpx;
+}
+
+.col-week { width: 100rpx; }
+.col-time { width: 180rpx; }
+.col-course { width: 200rpx; }
+.col-teacher { width: 140rpx; }
+.col-room { width: 120rpx; }
+.col-sem { width: 160rpx; }

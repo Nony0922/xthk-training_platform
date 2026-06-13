@@ -1,1 +1,17 @@
 @import '../../styles/common.wxss';
+@import '../../styles/table.wxss';
+
+.table-inner {
+  min-width: 960rpx;
+}
+
+.col-date { width: 160rpx; }
+.col-exam { width: 200rpx; }
+.col-course { width: 180rpx; }
+.col-time { width: 180rpx; }
+.col-loc { width: 120rpx; }
+.col-status { width: 120rpx; }
+
+.col-status .tag {
+  font-size: 22rpx;
+}

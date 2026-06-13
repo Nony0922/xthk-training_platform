@@ -10,5 +10,7 @@ module.exports = {
   exam: (n) => examStatus[n] || '-',
   msg: (n) => (n === 1 ? '已回复' : '待回复'),
   leaveType: (n) => ['', '事假', '病假', '其他'][n] || '-',
-  leaveStatus: (n) => ['待审批', '已通过', '已驳回', '已撤回'][n] || '-'
+  leaveStatus: (n) => ['待审批', '已通过', '已驳回', '已撤回'][n] || '-',
+  attendClass: (n) => ['', 'tag-green', 'tag-orange', 'tag-orange', 'tag-red', 'tag-purple'][n] || 'tag-gray',
+  examClass: (n) => ['tag-orange', 'tag-green', 'tag-gray'][n] || 'tag-gray'
 }

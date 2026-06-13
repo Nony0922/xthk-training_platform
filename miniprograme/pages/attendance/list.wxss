@@ -1,1 +1,11 @@
 @import '../../styles/common.wxss';
+@import '../../styles/table.wxss';
+
+.col-date { flex: 1.2; }
+.col-course { flex: 1.4; }
+.col-class { flex: 1.2; }
+.col-status { flex: 1; }
+
+.col-status .tag {
+  font-size: 22rpx;
+}
