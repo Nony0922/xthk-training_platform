@@ -2,9 +2,11 @@ package com.example.controller;
 
 import com.example.entity.*;
 import com.example.service.ParentAppService;
+import com.example.service.LearningReportService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -15,6 +17,9 @@ public class ParentAppController {
 
     @Autowired
     private ParentAppService parentAppService;
+
+    @Autowired
+    private LearningReportService learningReportService;
 
     @GetMapping("/parent/by-user/{userId}")
     public Parent parentByUser(@PathVariable Integer userId) {
@@ -116,5 +121,25 @@ public class ParentAppController {
     @PutMapping("/parent/{parentId}/leave/{leaveId}/withdraw")
     public Map<String, Object> withdrawLeave(@PathVariable Integer parentId, @PathVariable Integer leaveId) {
         return parentAppService.withdrawLeaveRequest(parentId, leaveId);
+    }
+
+    @GetMapping("/parent/{parentId}/reports")
+    public List<LearningReport> reports(@PathVariable Integer parentId) {
+        return parentAppService.getLearningReports(parentId);
+    }
+
+    @GetMapping("/parent/{parentId}/report/{reportId}")
+    public Map<String, Object> reportDetail(@PathVariable Integer parentId, @PathVariable Integer reportId) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            var data = learningReportService.getDetail(reportId, parentId);
+            result.put("code", 200);
+            result.put("msg", "success");
+            result.put("data", data);
+        } catch (Exception e) {
+            result.put("code", 500);
+            result.put("msg", e.getMessage());
+        }
+        return result;
     }
 }

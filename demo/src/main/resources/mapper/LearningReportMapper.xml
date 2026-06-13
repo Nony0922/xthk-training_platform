@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.LearningReportMapper">
+
+    <sql id="baseSelect">
+        SELECT lr.*,
+               c.name AS class_name,
+               st.name AS student_name
+        FROM learning_report lr
+        LEFT JOIN clazz c ON lr.class_id = c.id
+        LEFT JOIN student st ON lr.student_id = st.id
+    </sql>
+
+    <select id="findAll" resultType="com.example.entity.LearningReport">
+        <include refid="baseSelect"/>
+        ORDER BY lr.id DESC
+    </select>
+
+    <select id="findByCreator" resultType="com.example.entity.LearningReport">
+        <include refid="baseSelect"/>
+        WHERE lr.creator_role = #{creatorRole}
+          AND lr.creator_id = #{creatorId}
+        ORDER BY lr.id DESC
+    </select>
+
+    <select id="findVisibleForParent" resultType="com.example.entity.LearningReport">
+        <include refid="baseSelect"/>
+        WHERE lr.parent_visible = 1
+          AND (
+            lr.student_id IN (SELECT id FROM student WHERE parent_id = #{parentId})
+            OR lr.class_id IN (SELECT class_id FROM student WHERE parent_id = #{parentId})
+            OR (lr.student_id IS NULL AND lr.class_id IS NULL)
+          )
+        ORDER BY lr.id DESC
+    </select>
+
+    <select id="findById" resultType="com.example.entity.LearningReport">
+        <include refid="baseSelect"/>
+        WHERE lr.id = #{id}
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO learning_report (
+            title, question, sql_text, query_result_json, chart_config_json, report_content_json,
+            class_id, student_id, creator_role, creator_id, creator_name, parent_visible
+        ) VALUES (
+            #{title}, #{question}, #{sqlText}, #{queryResultJson}, #{chartConfigJson}, #{reportContentJson},
+            #{classId}, #{studentId}, #{creatorRole}, #{creatorId}, #{creatorName}, #{parentVisible}
+        )
+    </insert>
+
+    <delete id="deleteById">
+        DELETE FROM learning_report WHERE id = #{id}
+    </delete>
+</mapper>

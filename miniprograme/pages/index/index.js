@@ -14,6 +14,7 @@ Page({
       { name: '考勤信息', icon: '✅', url: '/pages/attendance/list' },
       { name: '考试安排', icon: '📝', url: '/pages/exam/list' },
       { name: '考试成绩', icon: '🏆', url: '/pages/score/list' },
+      { name: '学情报告', icon: '📊', url: '/pages/report/list' },
       { name: '请假申请', icon: '📋', url: '/pages/leave/list' },
       { name: '留言', icon: '💬', url: '/pages/message/list' }
     ],

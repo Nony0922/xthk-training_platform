@@ -13,6 +13,8 @@
     "pages/score/list",
     "pages/message/list",
     "pages/leave/list",
+    "pages/report/list",
+    "pages/report/detail",
     "pages/profile/profile"
   ],
   "window": {

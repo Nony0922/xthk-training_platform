@@ -96,7 +96,8 @@ const adminSchoolMenus = [
   { path: '/home/courses', title: '课程管理', icon: '📚' },
   { path: '/home/exams', title: '考试管理', icon: '📝' },
   { path: '/home/attendance', title: '考勤管理', icon: '✅' },
-  { path: '/home/schedule-ai', title: 'AI 智能排课', icon: '🤖' }
+  { path: '/home/schedule-ai', title: 'AI 智能排课', icon: '🤖' },
+  { path: '/home/learning-report', title: 'AI 学情分析', icon: '📊' }
 ]
 
 const headTeacherMenus = [
@@ -105,7 +106,8 @@ const headTeacherMenus = [
   { path: '/home/browse/parents', title: '本班家长', icon: '👪', breadcrumb: '班主任' },
   { path: '/home/teacher/leave', title: '本班请假', icon: '📋', breadcrumb: '班主任' },
   { path: '/home/teacher/attendance', title: '本班考勤', icon: '✅', breadcrumb: '班主任' },
-  { path: '/home/teacher/scores', title: '本班成绩', icon: '🏆', breadcrumb: '班主任' }
+  { path: '/home/teacher/scores', title: '本班成绩', icon: '🏆', breadcrumb: '班主任' },
+  { path: '/home/teacher/learning-report', title: 'AI 学情分析', icon: '📊', breadcrumb: '班主任' }
 ]
 
 const subjectTeacherMenus = [
@@ -113,7 +115,8 @@ const subjectTeacherMenus = [
   { path: '/home/browse/courses', title: '我的课程', icon: '📚', breadcrumb: '任课教师' },
   { path: '/home/teacher/exams', title: '考试管理', icon: '📝', breadcrumb: '任课教师' },
   { path: '/home/teacher/subject/attendance', title: '授课考勤', icon: '✅', breadcrumb: '任课教师' },
-  { path: '/home/teacher/subject/scores', title: '授课成绩', icon: '🏆', breadcrumb: '任课教师' }
+  { path: '/home/teacher/subject/scores', title: '授课成绩', icon: '🏆', breadcrumb: '任课教师' },
+  { path: '/home/teacher/learning-report', title: 'AI 学情分析', icon: '📊', breadcrumb: '任课教师' }
 ]
 
 const teacherMenus = computed(() => {

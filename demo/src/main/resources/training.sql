@@ -5,6 +5,7 @@ SET CHARACTER SET utf8mb4;
 CREATE DATABASE IF NOT EXISTS training_platform DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE training_platform;
 
+DROP TABLE IF EXISTS learning_report;
 DROP TABLE IF EXISTS course_order;
 DROP TABLE IF EXISTS message;
 DROP TABLE IF EXISTS home_visit;
@@ -267,6 +268,24 @@ CREATE TABLE course_order (
     create_time DATETIME DEFAULT CURRENT_TIMESTAMP
 ) COMMENT '课程订单表';
 
+-- AI 学情分析报告
+CREATE TABLE learning_report (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    title VARCHAR(200) NOT NULL COMMENT '报告标题',
+    question TEXT NOT NULL COMMENT '自然语言问题',
+    sql_text TEXT COMMENT '执行的 SQL',
+    query_result_json MEDIUMTEXT COMMENT '查询结果 JSON',
+    chart_config_json MEDIUMTEXT COMMENT '图表配置 JSON',
+    report_content_json MEDIUMTEXT COMMENT '报告正文 JSON',
+    class_id INT COMMENT '关联班级',
+    student_id INT COMMENT '关联学生',
+    creator_role VARCHAR(20) COMMENT '创建者角色 admin/teacher',
+    creator_id INT COMMENT '创建者 ID',
+    creator_name VARCHAR(50) COMMENT '创建者姓名',
+    parent_visible TINYINT DEFAULT 0 COMMENT '1家长可见 0仅教师',
+    create_time DATETIME DEFAULT CURRENT_TIMESTAMP
+) COMMENT 'AI学情分析报告';
+
 -- ========== 初始数据 ==========
 
 -- 系统用户：admin/teacher1(班主任)/teacher2(任课)/parent1
@@ -282,6 +301,7 @@ INSERT INTO teacher (user_id, name, gender, phone, teacher_level, subject, title
 
 INSERT INTO parent (user_id, name, phone, address)
 SELECT id, '王家长', '13800000004', '成都市武侯区' FROM sys_user WHERE username = 'parent1';
+-- 家长账号 parent1 已绑定家长档案；以下学生均关联该家长（多孩家庭演示）
 
 INSERT INTO clazz (name, grade, head_teacher_id, room, capacity, description) VALUES
 ('一年级1班', '一年级', 1, 'A101', 30, '语文基础班'),
@@ -290,7 +310,17 @@ INSERT INTO clazz (name, grade, head_teacher_id, room, capacity, description) VA
 INSERT INTO student (name, gender, birthday, class_id, parent_id, enroll_date)
 SELECT '王小明', 1, '2018-05-12', 1, p.id, '2024-09-01' FROM parent p WHERE p.phone = '13800000004'
 UNION ALL
-SELECT '李小红', 2, '2017-08-20', 2, p.id, '2024-09-01' FROM parent p WHERE p.phone = '13800000004';
+SELECT '李小红', 2, '2017-08-20', 2, p.id, '2024-09-01' FROM parent p WHERE p.phone = '13800000004'
+UNION ALL
+SELECT '陈小华', 2, '2018-03-08', 1, p.id, '2024-09-01' FROM parent p WHERE p.phone = '13800000004'
+UNION ALL
+SELECT '赵小强', 1, '2018-07-15', 1, p.id, '2024-09-01' FROM parent p WHERE p.phone = '13800000004'
+UNION ALL
+SELECT '刘小丽', 2, '2018-01-22', 1, p.id, '2024-09-01' FROM parent p WHERE p.phone = '13800000004'
+UNION ALL
+SELECT '周小杰', 1, '2018-11-05', 1, p.id, '2024-09-01' FROM parent p WHERE p.phone = '13800000004'
+UNION ALL
+SELECT '张小洋', 1, '2017-04-18', 2, p.id, '2024-09-01' FROM parent p WHERE p.phone = '13800000004';
 
 INSERT INTO course (name, description, teacher_id, hours, fee, status, target_grade, subject, teach_mode, location, valid_start, valid_end, class_time_desc, max_students, enrolled_count, suitable_age, highlights) VALUES
 ('小学语文基础', '面向一年级学生的语文基础课程，系统培养拼音、识字、阅读与写作能力，小班制互动教学。', 1, 48, 3600.00, 1, '一年级', '语文', 1, 'A101 教室（武侯校区）', '2025-03-01', '2025-06-30', '每周一、三 09:00-10:30', 30, 12, '6-7岁', '拼音启蒙|课外阅读|写作训练|小班互动'),
@@ -315,45 +345,99 @@ INSERT INTO announcement (title, content, publisher_id, publisher_name, target_r
 
 INSERT INTO exam (name, course_id, class_id, exam_date, start_time, end_time, location, total_score, status) VALUES
 ('语文期中考试', 1, 1, '2025-04-15', '09:00:00', '10:30:00', 'A101', 100, 0),
-('数学单元测试', 2, 2, '2025-04-10', '14:00:00', '15:00:00', 'B203', 100, 0);
+('语文单元测验', 1, 1, '2025-03-20', '09:00:00', '10:00:00', 'A101', 100, 2),
+('语文期末模拟', 1, 1, '2025-05-10', '09:00:00', '10:30:00', 'A101', 100, 0),
+('数学单元测试', 2, 2, '2025-04-10', '14:00:00', '15:00:00', 'B203', 100, 0),
+('数学阶段测评', 2, 2, '2025-04-20', '14:00:00', '15:00:00', 'B203', 100, 0);
 -- 注：status 入库值仅供参考，接口返回时由 ExamStatusUtil 按日期时间自动计算
 
-INSERT INTO score (exam_id, student_id, score, rank_num) VALUES
-(1, 1, 92.5, 1),
-(2, 2, 88.0, 1);
+INSERT INTO score (exam_id, student_id, score, rank_num)
+SELECT e.id, s.id, v.score, v.rank_num
+FROM exam e
+JOIN student s ON s.class_id = e.class_id
+JOIN (
+  SELECT '语文期中考试' AS en, '王小明' AS n, 92.5 AS score, 1 AS rank_num UNION ALL
+  SELECT '语文期中考试', '陈小华', 88.0, 2 UNION ALL
+  SELECT '语文期中考试', '赵小强', 85.5, 3 UNION ALL
+  SELECT '语文期中考试', '刘小丽', 79.0, 4 UNION ALL
+  SELECT '语文期中考试', '周小杰', 76.5, 5 UNION ALL
+  SELECT '语文单元测验', '王小明', 95.0, 1 UNION ALL
+  SELECT '语文单元测验', '陈小华', 90.0, 2 UNION ALL
+  SELECT '语文单元测验', '赵小强', 87.0, 3 UNION ALL
+  SELECT '语文单元测验', '刘小丽', 82.0, 4 UNION ALL
+  SELECT '语文单元测验', '周小杰', 80.0, 5 UNION ALL
+  SELECT '数学单元测试', '李小红', 88.0, 1 UNION ALL
+  SELECT '数学单元测试', '张小洋', 72.0, 2 UNION ALL
+  SELECT '数学阶段测评', '李小红', 91.0, 1 UNION ALL
+  SELECT '数学阶段测评', '张小洋', 78.5, 2
+) v ON e.name = v.en AND s.name = v.n;
 
-INSERT INTO attendance (student_id, class_id, course_id, attend_date, status, recorder_id) VALUES
-(1, 1, 1, '2025-03-01', 1, 2),
-(1, 1, 1, '2025-03-03', 2, 2),
-(2, 2, 2, '2025-03-02', 1, 3),
-(2, 2, 2, '2025-03-04', 4, 3);
+INSERT INTO attendance (student_id, class_id, course_id, attend_date, status, recorder_id)
+SELECT s.id, s.class_id, c.course_id, c.attend_date, c.status, c.recorder_id
+FROM student s
+JOIN (
+  SELECT '王小明' AS n, 1 AS class_id, 1 AS course_id, '2025-03-01' AS attend_date, 1 AS status, 2 AS recorder_id UNION ALL
+  SELECT '王小明', 1, 1, '2025-03-03', 2, 2 UNION ALL
+  SELECT '王小明', 1, 1, '2025-03-05', 1, 2 UNION ALL
+  SELECT '王小明', 1, 1, '2025-03-08', 1, 2 UNION ALL
+  SELECT '王小明', 1, 1, '2025-03-10', 5, 2 UNION ALL
+  SELECT '陈小华', 1, 1, '2025-03-01', 1, 2 UNION ALL
+  SELECT '陈小华', 1, 1, '2025-03-03', 1, 2 UNION ALL
+  SELECT '陈小华', 1, 1, '2025-03-05', 1, 2 UNION ALL
+  SELECT '陈小华', 1, 1, '2025-03-08', 2, 2 UNION ALL
+  SELECT '陈小华', 1, 1, '2025-03-10', 1, 2 UNION ALL
+  SELECT '赵小强', 1, 1, '2025-03-01', 1, 2 UNION ALL
+  SELECT '赵小强', 1, 1, '2025-03-03', 4, 2 UNION ALL
+  SELECT '赵小强', 1, 1, '2025-03-05', 1, 2 UNION ALL
+  SELECT '赵小强', 1, 1, '2025-03-08', 4, 2 UNION ALL
+  SELECT '赵小强', 1, 1, '2025-03-10', 1, 2 UNION ALL
+  SELECT '刘小丽', 1, 1, '2025-03-01', 1, 2 UNION ALL
+  SELECT '刘小丽', 1, 1, '2025-03-03', 1, 2 UNION ALL
+  SELECT '刘小丽', 1, 1, '2025-03-05', 2, 2 UNION ALL
+  SELECT '刘小丽', 1, 1, '2025-03-08', 1, 2 UNION ALL
+  SELECT '刘小丽', 1, 1, '2025-03-10', 1, 2 UNION ALL
+  SELECT '周小杰', 1, 1, '2025-03-01', 2, 2 UNION ALL
+  SELECT '周小杰', 1, 1, '2025-03-03', 1, 2 UNION ALL
+  SELECT '周小杰', 1, 1, '2025-03-05', 1, 2 UNION ALL
+  SELECT '周小杰', 1, 1, '2025-03-08', 3, 2 UNION ALL
+  SELECT '周小杰', 1, 1, '2025-03-10', 4, 2 UNION ALL
+  SELECT '李小红', 2, 2, '2025-03-02', 1, 3 UNION ALL
+  SELECT '李小红', 2, 2, '2025-03-04', 4, 3 UNION ALL
+  SELECT '李小红', 2, 2, '2025-03-06', 1, 3 UNION ALL
+  SELECT '李小红', 2, 2, '2025-03-09', 2, 3 UNION ALL
+  SELECT '张小洋', 2, 2, '2025-03-02', 1, 3 UNION ALL
+  SELECT '张小洋', 2, 2, '2025-03-04', 1, 3 UNION ALL
+  SELECT '张小洋', 2, 2, '2025-03-06', 4, 3 UNION ALL
+  SELECT '张小洋', 2, 2, '2025-03-09', 4, 3
+) c ON s.name = c.n AND s.class_id = c.class_id;
 
-INSERT INTO abnormal_attendance (attendance_id, student_id, abnormal_type, description, handle_status) VALUES
-(2, 1, 2, '迟到15分钟', 0),
-(4, 2, 4, '未到课，未请假', 0);
+INSERT INTO abnormal_attendance (attendance_id, student_id, abnormal_type, description, handle_status)
+SELECT a.id, s.id, 2, '迟到15分钟', 0
+FROM attendance a
+JOIN student s ON a.student_id = s.id
+WHERE s.name = '王小明' AND a.attend_date = '2025-03-03' AND a.status = 2
+UNION ALL
+SELECT a.id, s.id, 4, '未到课，未请假', 0
+FROM attendance a
+JOIN student s ON a.student_id = s.id
+WHERE s.name = '赵小强' AND a.attend_date = '2025-03-08' AND a.status = 4;
 
-INSERT INTO leave_request (student_id, applicant_id, applicant_name, leave_type, start_date, end_date, reason, status) VALUES
-(1, 4, '王家长', 2, '2025-03-10', '2025-03-11', '感冒发烧，需要休息', 0);
+INSERT INTO leave_request (student_id, applicant_id, applicant_name, leave_type, start_date, end_date, reason, status)
+SELECT s.id, u.id, '王家长', 2, '2025-03-10', '2025-03-11', '感冒发烧，需要休息', 0
+FROM student s
+JOIN sys_user u ON u.username = 'parent1'
+WHERE s.name = '王小明';
 
 INSERT INTO home_visit (student_id, teacher_id, visit_date, visit_type, content, feedback, next_plan) VALUES
 (1, 1, '2025-02-20', 2, '电话了解学生在家学习情况', '家长反馈孩子阅读兴趣较高', '建议增加课外阅读');
 
-INSERT INTO message (parent_id, content, status) VALUES
-(1, '请问下周课程是否有调整？', 0);
+INSERT INTO message (parent_id, content, status)
+SELECT p.id, '请问下周课程是否有调整？', 0 FROM parent p WHERE p.phone = '13800000004';
 
-INSERT INTO course_order (order_no, parent_id, course_id, course_name, teacher_name, hours, fee, status) VALUES
-('ORD20250301001', 1, 1, '小学语文基础', '张老师', 48, 3600.00, 1),
-('ORD20250315002', 1, 3, '英语口语启蒙', '李老师', 24, 1800.00, 0);
+INSERT INTO course_order (order_no, parent_id, course_id, course_name, teacher_name, hours, fee, status)
+SELECT 'ORD20250301001', p.id, 1, '小学语文基础', '张老师', 48, 3600.00, 1 FROM parent p WHERE p.phone = '13800000004'
+UNION ALL
+SELECT 'ORD20250315002', p.id, 3, '英语口语启蒙', '李老师', 24, 1800.00, 0 FROM parent p WHERE p.phone = '13800000004';
 
--- ========== 增量升级（若 course 表已存在且缺少新字段，可单独执行）==========
--- ALTER TABLE course ADD COLUMN target_grade VARCHAR(50) COMMENT '适用年级' AFTER fee;
--- ALTER TABLE course ADD COLUMN subject VARCHAR(50) COMMENT '学科' AFTER target_grade;
--- ALTER TABLE course ADD COLUMN teach_mode TINYINT DEFAULT 1 COMMENT '1线下 2线上 3混合' AFTER subject;
--- ALTER TABLE course ADD COLUMN location VARCHAR(200) COMMENT '上课地点' AFTER teach_mode;
--- ALTER TABLE course ADD COLUMN valid_start DATE COMMENT '课程开始日期' AFTER location;
--- ALTER TABLE course ADD COLUMN valid_end DATE COMMENT '课程结束日期' AFTER valid_start;
--- ALTER TABLE course ADD COLUMN class_time_desc VARCHAR(200) COMMENT '上课时间说明' AFTER valid_end;
--- ALTER TABLE course ADD COLUMN max_students INT DEFAULT 0 COMMENT '招生名额，0表示不限' AFTER class_time_desc;
--- ALTER TABLE course ADD COLUMN enrolled_count INT DEFAULT 0 COMMENT '已报名人数' AFTER max_students;
--- ALTER TABLE course ADD COLUMN suitable_age VARCHAR(50) COMMENT '适合年龄' AFTER enrolled_count;
--- ALTER TABLE course ADD COLUMN highlights VARCHAR(500) COMMENT '课程亮点，|分隔' AFTER suitable_age;
+-- 说明：本文件为唯一数据库脚本，包含建库、建表及全部初始/演示数据（含 AI 学情分析、家长绑定、多孩家庭等）。
+-- 使用方式：在 MySQL 中完整执行本文件即可，无需再执行其他 SQL 脚本。

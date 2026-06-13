@@ -1,0 +1,15 @@
+<view class="container">
+  <view wx:if="{{!hasData}}" class="empty">暂无学情分析报告</view>
+  <view wx:else class="report-list">
+    <view class="report-card" wx:for="{{reports}}" wx:key="id" bindtap="goDetail" data-id="{{item.id}}">
+      <view class="report-title">{{item.title}}</view>
+      <view class="report-question">{{item.question}}</view>
+      <view class="report-meta">
+        <text>{{item.createTime}}</text>
+        <text wx:if="{{item.className}}"> · {{item.className}}</text>
+        <text wx:if="{{item.studentName}}"> · {{item.studentName}}</text>
+      </view>
+      <view class="report-arrow">查看详情 ›</view>
+    </view>
+  </view>
+</view>

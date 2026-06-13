@@ -1,0 +1,48 @@
+<view class="container">
+  <view wx:if="{{loading}}" class="empty">加载中...</view>
+  <view wx:else>
+    <view class="title-card">
+      <view class="title">{{title}}</view>
+      <view wx:if="{{summary}}" class="summary">{{summary}}</view>
+    </view>
+
+    <view wx:if="{{barCharts.length}}" class="section">
+      <view class="section-title">数据可视化</view>
+      <view class="chart-card" wx:for="{{barCharts}}" wx:key="title">
+        <view class="chart-title">{{item.title}}</view>
+        <view wx:if="{{item.bars.length}}" class="bar-list">
+          <view class="bar-row" wx:for="{{item.bars}}" wx:for-item="bar" wx:key="label">
+            <text class="bar-label">{{bar.label}}</text>
+            <view class="bar-track">
+              <view class="bar-fill" style="width: {{bar.width}}%;"></view>
+            </view>
+            <text class="bar-value">{{bar.value}}</text>
+          </view>
+        </view>
+        <view wx:else class="chart-tip">该图表请在表格中查看明细数据</view>
+      </view>
+    </view>
+
+    <view wx:if="{{rows.length}}" class="section">
+      <view class="section-title">查询结果</view>
+      <scroll-view scroll-x class="table-scroll">
+        <view class="table-wrap">
+          <view class="table-header">
+            <text class="th" wx:for="{{columns}}" wx:key="*this">{{item}}</text>
+          </view>
+          <view class="table-row" wx:for="{{rows}}" wx:for-item="row" wx:key="index">
+            <text class="td" wx:for="{{row}}" wx:for-item="cell" wx:key="index">{{cell}}</text>
+          </view>
+        </view>
+      </scroll-view>
+    </view>
+
+    <view wx:if="{{sections.length}}" class="section">
+      <view class="section-title">学情分析</view>
+      <view class="analysis-item" wx:for="{{sections}}" wx:key="heading">
+        <view class="analysis-heading">{{item.heading}}</view>
+        <view class="analysis-content">{{item.content}}</view>
+      </view>
+    </view>
+  </view>
+</view>

@@ -15,6 +15,7 @@ const AttendanceManage = () => import('@/views/AttendanceManage.vue')
 const ScoreManage = () => import('@/views/ScoreManage.vue')
 const LeaveManage = () => import('@/views/LeaveManage.vue')
 const ScheduleAiAssistant = () => import('@/views/ScheduleAiAssistant.vue')
+const LearningReport = () => import('@/views/LearningReport.vue')
 
 const routes = [
   {
@@ -97,6 +98,12 @@ const routes = [
         component: ScheduleAiAssistant,
         meta: { title: 'AI 智能排课', roles: ['admin'], group: 'school' }
       },
+      {
+        path: 'learning-report',
+        name: 'LearningReport',
+        component: LearningReport,
+        meta: { title: 'AI 学情分析', roles: ['admin'], group: 'school' }
+      },
       // 教师 - 浏览类
       {
         path: 'browse/announcements',
@@ -158,6 +165,12 @@ const routes = [
         name: 'TeacherLeave',
         component: LeaveManage,
         meta: { title: '本班请假', roles: ['teacher'], teacherLevels: [2] }
+      },
+      {
+        path: 'teacher/learning-report',
+        name: 'TeacherLearningReport',
+        component: LearningReport,
+        meta: { title: 'AI 学情分析', roles: ['teacher'], teacherLevels: [1, 2] }
       }
     ]
   }

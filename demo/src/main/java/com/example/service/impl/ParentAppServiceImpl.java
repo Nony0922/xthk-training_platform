@@ -24,6 +24,7 @@ public class ParentAppServiceImpl implements ParentAppService {
     @Autowired private CourseOrderService courseOrderService;
     @Autowired private ParentService parentService;
     @Autowired private LeaveRequestService leaveRequestService;
+    @Autowired private LearningReportService learningReportService;
 
     private List<Student> studentsOf(Integer parentId) {
         return studentService.findAll().stream()
@@ -289,5 +290,22 @@ public class ParentAppServiceImpl implements ParentAppService {
         result.put("code", r > 0 ? 200 : 500);
         result.put("msg", r > 0 ? "订单已取消" : "取消失败");
         return result;
+    }
+
+    @Override
+    public List<LearningReport> getLearningReports(Integer parentId) {
+        return learningReportService.listForParent(parentId);
+    }
+
+    @Override
+    public LearningReport getLearningReportDetail(Integer parentId, Integer reportId) {
+        LearningReport report = learningReportService.listForParent(parentId).stream()
+                .filter(r -> Objects.equals(r.getId(), reportId))
+                .findFirst()
+                .orElse(null);
+        if (report == null) {
+            return null;
+        }
+        return report;
     }
 }
