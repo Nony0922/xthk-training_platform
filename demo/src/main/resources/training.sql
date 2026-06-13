@@ -99,6 +99,17 @@ CREATE TABLE course (
     teacher_id INT,
     hours INT DEFAULT 0 COMMENT '学时',
     fee DECIMAL(10,2) DEFAULT 0 COMMENT '费用',
+    target_grade VARCHAR(50) COMMENT '适用年级',
+    subject VARCHAR(50) COMMENT '学科',
+    teach_mode TINYINT DEFAULT 1 COMMENT '1线下 2线上 3混合',
+    location VARCHAR(200) COMMENT '上课地点',
+    valid_start DATE COMMENT '课程开始日期',
+    valid_end DATE COMMENT '课程结束日期',
+    class_time_desc VARCHAR(200) COMMENT '上课时间说明',
+    max_students INT DEFAULT 0 COMMENT '招生名额，0表示不限',
+    enrolled_count INT DEFAULT 0 COMMENT '已报名人数',
+    suitable_age VARCHAR(50) COMMENT '适合年龄',
+    highlights VARCHAR(500) COMMENT '课程亮点，|分隔',
     status TINYINT DEFAULT 1 COMMENT '1上架 0下架',
     create_time DATETIME DEFAULT CURRENT_TIMESTAMP
 ) COMMENT '课程表';
@@ -281,10 +292,10 @@ SELECT '王小明', 1, '2018-05-12', 1, p.id, '2024-09-01' FROM parent p WHERE p
 UNION ALL
 SELECT '李小红', 2, '2017-08-20', 2, p.id, '2024-09-01' FROM parent p WHERE p.phone = '13800000004';
 
-INSERT INTO course (name, description, teacher_id, hours, fee, status) VALUES
-('小学语文基础', '面向一年级学生的语文基础课程，培养阅读与写作能力', 1, 48, 3600.00, 1),
-('小学数学提高', '面向二年级学生的数学提高课程，强化逻辑思维', 2, 36, 2800.00, 1),
-('英语口语启蒙', '面向初学者的英语口语启蒙课程', 2, 24, 1800.00, 1);
+INSERT INTO course (name, description, teacher_id, hours, fee, status, target_grade, subject, teach_mode, location, valid_start, valid_end, class_time_desc, max_students, enrolled_count, suitable_age, highlights) VALUES
+('小学语文基础', '面向一年级学生的语文基础课程，系统培养拼音、识字、阅读与写作能力，小班制互动教学。', 1, 48, 3600.00, 1, '一年级', '语文', 1, 'A101 教室（武侯校区）', '2025-03-01', '2025-06-30', '每周一、三 09:00-10:30', 30, 12, '6-7岁', '拼音启蒙|课外阅读|写作训练|小班互动'),
+('小学数学提高', '面向二年级学生的数学提高课程，强化逻辑思维与综合应用能力，含阶段测评与错题讲解。', 2, 36, 2800.00, 1, '二年级', '数学', 1, 'B203 教室（武侯校区）', '2025-03-01', '2025-06-30', '每周二、四 14:00-15:30', 25, 8, '7-8岁', '思维训练|应用题突破|阶段测评|错题讲解'),
+('英语口语启蒙', '面向初学者的英语口语启蒙课程，线上直播互动，外教式情景对话练习，支持回放复习。', 2, 24, 1800.00, 1, '全年级', '英语', 2, '线上直播（腾讯会议）', '2025-03-15', '2025-05-31', '每周六 09:30-11:00', 50, 20, '6-10岁', '情景对话|发音纠正|直播互动|课程回放');
 
 INSERT INTO class_schedule (class_id, course_id, teacher_id, weekday, start_time, end_time, room, semester) VALUES
 (1, 1, 1, 1, '09:00:00', '10:30:00', 'A101', '2025春季'),
@@ -332,3 +343,16 @@ INSERT INTO message (parent_id, content, status) VALUES
 INSERT INTO course_order (order_no, parent_id, course_id, course_name, teacher_name, hours, fee, status) VALUES
 ('ORD20250301001', 1, 1, '小学语文基础', '张老师', 48, 3600.00, 1),
 ('ORD20250315002', 1, 3, '英语口语启蒙', '李老师', 24, 1800.00, 0);
+
+-- ========== 增量升级（若 course 表已存在且缺少新字段，可单独执行）==========
+-- ALTER TABLE course ADD COLUMN target_grade VARCHAR(50) COMMENT '适用年级' AFTER fee;
+-- ALTER TABLE course ADD COLUMN subject VARCHAR(50) COMMENT '学科' AFTER target_grade;
+-- ALTER TABLE course ADD COLUMN teach_mode TINYINT DEFAULT 1 COMMENT '1线下 2线上 3混合' AFTER subject;
+-- ALTER TABLE course ADD COLUMN location VARCHAR(200) COMMENT '上课地点' AFTER teach_mode;
+-- ALTER TABLE course ADD COLUMN valid_start DATE COMMENT '课程开始日期' AFTER location;
+-- ALTER TABLE course ADD COLUMN valid_end DATE COMMENT '课程结束日期' AFTER valid_start;
+-- ALTER TABLE course ADD COLUMN class_time_desc VARCHAR(200) COMMENT '上课时间说明' AFTER valid_end;
+-- ALTER TABLE course ADD COLUMN max_students INT DEFAULT 0 COMMENT '招生名额，0表示不限' AFTER class_time_desc;
+-- ALTER TABLE course ADD COLUMN enrolled_count INT DEFAULT 0 COMMENT '已报名人数' AFTER max_students;
+-- ALTER TABLE course ADD COLUMN suitable_age VARCHAR(50) COMMENT '适合年龄' AFTER enrolled_count;
+-- ALTER TABLE course ADD COLUMN highlights VARCHAR(500) COMMENT '课程亮点，|分隔' AFTER suitable_age;

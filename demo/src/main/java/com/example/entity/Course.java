@@ -15,6 +15,17 @@ public class Course {
     private Integer teacherId;
     private Integer hours;
     private BigDecimal fee;
+    private String targetGrade;
+    private String subject;
+    private Integer teachMode;
+    private String location;
+    private String validStart;
+    private String validEnd;
+    private String classTimeDesc;
+    private Integer maxStudents;
+    private Integer enrolledCount;
+    private String suitableAge;
+    private String highlights;
     private Integer status;
     private String createTime;
     private String teacherName;

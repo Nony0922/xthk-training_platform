@@ -139,13 +139,19 @@ public class ParentAppServiceImpl implements ParentAppService {
     @Override
     public Map<String, Object> createOrder(CourseOrder order) {
         Map<String, Object> result = new HashMap<>();
+        Course course = courseService.findById(order.getCourseId());
+        String err = courseService.validatePurchasable(course);
+        if (err != null) {
+            result.put("code", 500);
+            result.put("msg", err);
+            return result;
+        }
         if (order.getOrderNo() == null || order.getOrderNo().isEmpty()) {
             order.setOrderNo("ORD" + System.currentTimeMillis());
         }
         if (order.getStatus() == null) {
             order.setStatus(0);
         }
-        Course course = courseService.findById(order.getCourseId());
         if (course != null) {
             if (order.getCourseName() == null) order.setCourseName(course.getName());
             if (order.getTeacherName() == null) order.setTeacherName(course.getTeacherName());
@@ -231,11 +237,57 @@ public class ParentAppServiceImpl implements ParentAppService {
             result.put("msg", "订单不存在");
             return result;
         }
+        if (order.getStatus() != null && order.getStatus() == 1) {
+            result.put("code", 500);
+            result.put("msg", "订单已支付");
+            return result;
+        }
+        if (order.getStatus() == null || order.getStatus() != 0) {
+            result.put("code", 500);
+            result.put("msg", "订单状态不可支付");
+            return result;
+        }
+        Course course = courseService.findById(order.getCourseId());
+        String err = courseService.validatePurchasable(course);
+        if (err != null) {
+            result.put("code", 500);
+            result.put("msg", err);
+            return result;
+        }
         order.setStatus(1);
         order.setPayTime(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
         int r = courseOrderService.update(order);
+        if (r > 0) {
+            courseService.incrementEnrolledCount(order.getCourseId());
+        }
         result.put("code", r > 0 ? 200 : 500);
         result.put("msg", r > 0 ? "支付成功" : "支付失败");
+        return result;
+    }
+
+    @Override
+    public Map<String, Object> cancelOrder(Integer parentId, Integer orderId) {
+        Map<String, Object> result = new HashMap<>();
+        CourseOrder order = courseOrderService.findById(orderId);
+        if (order == null) {
+            result.put("code", 500);
+            result.put("msg", "订单不存在");
+            return result;
+        }
+        if (!parentId.equals(order.getParentId())) {
+            result.put("code", 500);
+            result.put("msg", "无权操作该订单");
+            return result;
+        }
+        if (order.getStatus() == null || order.getStatus() != 0) {
+            result.put("code", 500);
+            result.put("msg", "仅待支付订单可以取消");
+            return result;
+        }
+        order.setStatus(2);
+        int r = courseOrderService.update(order);
+        result.put("code", r > 0 ? 200 : 500);
+        result.put("msg", r > 0 ? "订单已取消" : "取消失败");
         return result;
     }
 }

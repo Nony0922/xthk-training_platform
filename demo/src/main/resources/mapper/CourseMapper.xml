@@ -4,10 +4,19 @@
     <select id="findAll" resultType="com.example.entity.Course">SELECT c.*, t.name AS teacher_name FROM course c LEFT JOIN teacher t ON c.teacher_id = t.id ORDER BY c.id</select>
     <select id="findById" resultType="com.example.entity.Course">SELECT c.*, t.name AS teacher_name FROM course c LEFT JOIN teacher t ON c.teacher_id = t.id WHERE c.id = #{id}</select>
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO course (name, description, teacher_id, hours, fee, status) VALUES (#{name}, #{description}, #{teacherId}, #{hours}, #{fee}, #{status})
+        INSERT INTO course (name, description, teacher_id, hours, fee, target_grade, subject, teach_mode, location, valid_start, valid_end, class_time_desc, max_students, enrolled_count, suitable_age, highlights, status)
+        VALUES (#{name}, #{description}, #{teacherId}, #{hours}, #{fee}, #{targetGrade}, #{subject}, #{teachMode}, #{location}, #{validStart}, #{validEnd}, #{classTimeDesc}, #{maxStudents}, #{enrolledCount}, #{suitableAge}, #{highlights}, #{status})
     </insert>
     <update id="update">
-        UPDATE course SET name=#{name}, description=#{description}, teacher_id=#{teacherId}, hours=#{hours}, fee=#{fee}, status=#{status} WHERE id = #{id}
+        UPDATE course SET name=#{name}, description=#{description}, teacher_id=#{teacherId}, hours=#{hours}, fee=#{fee},
+        target_grade=#{targetGrade}, subject=#{subject}, teach_mode=#{teachMode}, location=#{location},
+        valid_start=#{validStart}, valid_end=#{validEnd}, class_time_desc=#{classTimeDesc},
+        max_students=#{maxStudents}, enrolled_count=#{enrolledCount}, suitable_age=#{suitableAge}, highlights=#{highlights}, status=#{status}
+        WHERE id = #{id}
+    </update>
+    <update id="incrementEnrolledCount">
+        UPDATE course SET enrolled_count = enrolled_count + 1
+        WHERE id = #{id} AND (max_students = 0 OR max_students IS NULL OR enrolled_count &lt; max_students)
     </update>
     <delete id="deleteById">
         DELETE FROM course WHERE id = #{id}

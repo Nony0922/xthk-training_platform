@@ -11,4 +11,5 @@ public interface CourseMapper {
     int insert(Course entity);
     int update(Course entity);
     int deleteById(Integer id);
+    int incrementEnrolledCount(Integer id);
 }

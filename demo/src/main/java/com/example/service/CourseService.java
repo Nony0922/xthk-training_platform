@@ -10,4 +10,6 @@ public interface CourseService {
     int insert(Course entity);
     int update(Course entity);
     int deleteById(Integer id);
+    int incrementEnrolledCount(Integer id);
+    String validatePurchasable(Course course);
 }

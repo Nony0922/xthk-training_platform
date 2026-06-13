@@ -87,6 +87,11 @@ public class ParentAppController {
         return parentAppService.payOrder(id);
     }
 
+    @PutMapping("/parent/{parentId}/order/{orderId}/cancel")
+    public Map<String, Object> cancelOrder(@PathVariable Integer parentId, @PathVariable Integer orderId) {
+        return parentAppService.cancelOrder(parentId, orderId);
+    }
+
     @GetMapping("/parent/{parentId}/profile")
     public Parent profile(@PathVariable Integer parentId) {
         return parentAppService.getProfile(parentId);

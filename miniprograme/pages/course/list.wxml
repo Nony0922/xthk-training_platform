@@ -1,11 +1,48 @@
 <view class="container">
+  <view class="filter-bar">
+    <view
+      class="filter-item {{filterMode === index ? 'active' : ''}}"
+      wx:for="{{modes}}"
+      wx:key="*this"
+      data-mode="{{index}}"
+      bindtap="setFilter"
+    >{{item}}</view>
+  </view>
+
   <view wx:if="{{list.length===0}}" class="empty">暂无可选课程</view>
-  <view class="card" wx:for="{{list}}" wx:key="id" bindtap="goDetail" data-id="{{item.id}}">
-    <view class="card-title">{{item.name}}</view>
-    <view class="card-desc">{{item.description}}</view>
-    <view class="card-row"><text class="label">任课教师</text><text class="value">{{item.teacherName || '-'}}</text></view>
-    <view class="card-row"><text class="label">学时</text><text class="value">{{item.hours}} 课时</text></view>
-    <view class="card-row"><text class="label">费用</text><text class="price">¥{{item.fee}}</text></view>
-    <view class="card-footer"><text class="link">查看详情 / 购买 ›</text></view>
+
+  <view class="course-card {{item.full ? 'disabled' : ''}}" wx:for="{{list}}" wx:key="id" bindtap="goDetail" data-id="{{item.id}}">
+    <view class="course-head">
+      <text class="course-name">{{item.name}}</text>
+      <text class="course-price">¥{{item.fee}}</text>
+    </view>
+    <view class="tag-row">
+      <text class="tag tag-purple" wx:if="{{item.subject}}">{{item.subject}}</text>
+      <text class="tag {{item.teachModeClass}}">{{item.teachModeText}}</text>
+      <text class="tag tag-gray" wx:if="{{item.targetGrade}}">{{item.targetGrade}}</text>
+      <text class="tag {{item.remainSeatsClass}}">{{item.remainSeatsText}}</text>
+    </view>
+    <view class="course-desc">{{item.description}}</view>
+    <view class="info-grid">
+      <view class="info-cell">
+        <text class="info-label">任课教师</text>
+        <text class="info-value">{{item.teacherName || '-'}}</text>
+      </view>
+      <view class="info-cell">
+        <text class="info-label">课程学时</text>
+        <text class="info-value">{{item.hours}} 课时</text>
+      </view>
+      <view class="info-cell">
+        <text class="info-label">有效日期</text>
+        <text class="info-value">{{item.validPeriodText}}</text>
+      </view>
+      <view class="info-cell">
+        <text class="info-label">上课地点</text>
+        <text class="info-value">{{item.location || '-'}}</text>
+      </view>
+    </view>
+    <view class="card-footer">
+      <text class="link">{{item.full ? '已满员' : '查看详情 / 购买'}} ›</text>
+    </view>
   </view>
 </view>

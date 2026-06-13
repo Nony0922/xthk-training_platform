@@ -1,17 +1,68 @@
-<view class="container" wx:if="{{course}}">
+<view class="page" wx:if="{{course}}">
   <view class="hero">
+    <view class="tag-row">
+      <text class="tag tag-purple" wx:if="{{course.subject}}">{{course.subject}}</text>
+      <text class="tag {{course.teachModeClass}}">{{course.teachModeFull}}</text>
+      <text class="tag tag-gray" wx:if="{{course.targetGrade}}">适用{{course.targetGrade}}</text>
+      <text class="tag {{course.remainSeatsClass}}">{{course.remainSeatsText}}</text>
+    </view>
     <text class="hero-title">{{course.name}}</text>
-    <text class="hero-price">¥{{course.fee}}</text>
+    <view class="hero-price-row">
+      <text class="hero-price">¥{{course.fee}}</text>
+      <text class="hero-hours">{{course.hours}} 课时</text>
+    </view>
   </view>
-  <view class="card">
-    <view class="card-row"><text class="label">课程介绍</text></view>
-    <view class="card-desc">{{course.description || '暂无介绍'}}</view>
+
+  <view wx:if="{{buyTip}}" class="fit-tip {{canBuy ? '' : 'fit-tip-warn'}}">{{buyTip}}</view>
+
+  <view class="section-card">
+    <view class="section-title">课程信息</view>
+    <view class="detail-table">
+      <view class="detail-row"><text class="detail-label">适用年级</text><text class="detail-value">{{course.targetGrade || '不限'}}</text></view>
+      <view class="detail-row"><text class="detail-label">适合年龄</text><text class="detail-value">{{course.suitableAge || '-'}}</text></view>
+      <view class="detail-row"><text class="detail-label">授课方式</text><text class="detail-value">{{course.teachModeFull}}</text></view>
+      <view class="detail-row"><text class="detail-label">有效日期</text><text class="detail-value">{{course.validPeriodText}}</text></view>
+      <view class="detail-row"><text class="detail-label">上课时间</text><text class="detail-value">{{course.classTimeDesc || '-'}}</text></view>
+      <view class="detail-row"><text class="detail-label">上课地点</text><text class="detail-value">{{course.location || '-'}}</text></view>
+      <view class="detail-row"><text class="detail-label">任课教师</text><text class="detail-value">{{course.teacherName || '-'}}</text></view>
+      <view class="detail-row"><text class="detail-label">招生名额</text><text class="detail-value">{{course.maxStudents > 0 ? course.maxStudents + ' 人' : '不限'}}</text></view>
+    </view>
   </view>
-  <view class="card">
-    <view class="card-row"><text class="label">任课教师</text><text class="value">{{course.teacherName || '-'}}</text></view>
-    <view class="card-row"><text class="label">课程学时</text><text class="value">{{course.hours}} 课时</text></view>
-    <view class="card-row"><text class="label">课程费用</text><text class="price">¥{{course.fee}}</text></view>
+
+  <view class="section-card" wx:if="{{course.highlightList.length > 0}}">
+    <view class="section-title">课程亮点</view>
+    <view class="highlight-list">
+      <view class="highlight-item" wx:for="{{course.highlightList}}" wx:key="*this">
+        <text class="highlight-dot">✓</text>
+        <text>{{item}}</text>
+      </view>
+    </view>
   </view>
-  <button class="btn-primary" bindtap="addOrder">加入订单</button>
-  <button class="btn-outline" style="margin-top:20rpx" bindtap="buyNow">立即购买并支付</button>
+
+  <view class="section-card">
+    <view class="section-title">课程介绍</view>
+    <view class="desc-text">{{course.description || '暂无介绍'}}</view>
+  </view>
+
+  <view class="section-card">
+    <view class="section-title">购买须知</view>
+    <view class="notice-list">
+      <text class="notice-item">1. 请在课程有效日期内完成报名与缴费。</text>
+      <text class="notice-item">2. 线上课程请提前准备网络环境与上课设备。</text>
+      <text class="notice-item">3. 线下课程请按上课时间准时到达指定教室。</text>
+      <text class="notice-item">4. 名额有限，支付成功后视为报名成功。</text>
+      <text class="notice-item">5. 如有疑问，可通过「留言」功能联系机构。</text>
+    </view>
+  </view>
+
+  <view class="bottom-bar">
+    <view class="bottom-price">
+      <text class="bottom-label">合计</text>
+      <text class="bottom-amount">¥{{course.fee}}</text>
+    </view>
+    <view class="bottom-actions">
+      <button class="btn-cart" bindtap="addOrder" disabled="{{!canBuy}}">加入订单</button>
+      <button class="btn-buy" bindtap="buyNow" disabled="{{!canBuy}}">立即购买</button>
+    </view>
+  </view>
 </view>

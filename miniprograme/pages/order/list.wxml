@@ -1,14 +1,24 @@
 <view class="container">
   <view wx:if="{{list.length===0}}" class="empty">暂无订单</view>
-  <view class="card" wx:for="{{list}}" wx:key="id" bindtap="goDetail" data-id="{{item.id}}">
-    <view class="card-row">
-      <text class="card-title">{{item.courseName}}</text>
+  <view class="order-card" wx:for="{{list}}" wx:key="id" bindtap="goDetail" data-id="{{item.id}}">
+    <view class="order-head">
+      <text class="order-title">{{item.courseName}}</text>
       <text class="tag {{item.status===1?'tag-green':item.status===0?'tag-orange':'tag-gray'}}">{{statusText[item.status]}}</text>
     </view>
-    <view class="card-row"><text class="label">订单号</text><text class="value">{{item.orderNo}}</text></view>
-    <view class="card-row"><text class="label">任课教师</text><text class="value">{{item.teacherName}}</text></view>
-    <view class="card-row"><text class="label">学时</text><text class="value">{{item.hours}} 课时</text></view>
-    <view class="card-row"><text class="label">费用</text><text class="price">¥{{item.fee}}</text></view>
-    <button wx:if="{{item.status===0}}" class="btn-pay" catchtap="payOrder" data-id="{{item.id}}">立即支付</button>
+    <view class="tag-row">
+      <text class="tag tag-gray" wx:if="{{item.targetGrade !== '-'}}">{{item.targetGrade}}</text>
+      <text class="tag tag-purple" wx:if="{{item.teachModeText !== '-'}}">{{item.teachModeText}}</text>
+    </view>
+    <view class="info-table">
+      <view class="info-row"><text class="info-label">订单号</text><text class="info-value">{{item.orderNo}}</text></view>
+      <view class="info-row"><text class="info-label">有效日期</text><text class="info-value">{{item.validPeriodText}}</text></view>
+      <view class="info-row"><text class="info-label">上课地点</text><text class="info-value">{{item.location}}</text></view>
+      <view class="info-row"><text class="info-label">任课教师</text><text class="info-value">{{item.teacherName}}</text></view>
+      <view class="info-row"><text class="info-label">学时 / 费用</text><text class="info-value">{{item.hours}} 课时 · ¥{{item.fee}}</text></view>
+    </view>
+    <view wx:if="{{item.status===0}}" class="action-row">
+      <button class="btn-cancel" catchtap="cancelOrder" data-id="{{item.id}}">取消订单</button>
+      <button class="btn-pay" catchtap="payOrder" data-id="{{item.id}}">立即支付</button>
+    </view>
   </view>
 </view>

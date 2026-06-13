@@ -9,6 +9,8 @@
           <tr>
             <th>ID</th>
             <th>课程名称</th>
+            <th>适用年级</th>
+            <th>授课方式</th>
             <th>任课教师</th>
             <th>学时</th>
             <th>费用</th>
@@ -20,6 +22,8 @@
           <tr v-for="item in list" :key="item.id">
             <td>{{ item.id ?? '-' }}</td>
             <td>{{ item.name ?? '-' }}</td>
+            <td>{{ item.targetGrade ?? '-' }}</td>
+            <td>{{ formatCell(item.teachMode, 'teachMode') }}</td>
             <td>{{ item.teacherName ?? '-' }}</td>
             <td>{{ item.hours ?? '-' }}</td>
             <td>{{ item.fee ?? '-' }}</td>
@@ -50,6 +54,54 @@
           <div class="form-item">
             <label>任课教师</label>
             <select v-model="form.teacherId"><option :value="null">请选择</option><option v-for="t in teachers" :key="t.id" :value="t.id">{{ t.name }}</option></select>
+          </div>
+          <div class="form-item">
+            <label>适用年级</label>
+            <input v-model="form.targetGrade" type="text" placeholder="如：一年级、二年级、全年级" />
+          </div>
+          <div class="form-item">
+            <label>学科</label>
+            <input v-model="form.subject" type="text" placeholder="如：语文、数学、英语" />
+          </div>
+          <div class="form-item">
+            <label>授课方式</label>
+            <select v-model="form.teachMode">
+              <option :value="1">线下授课</option>
+              <option :value="2">线上直播</option>
+              <option :value="3">线上线下混合</option>
+            </select>
+          </div>
+          <div class="form-item">
+            <label>上课地点</label>
+            <input v-model="form.location" type="text" placeholder="线下填教室，线上填平台名称" />
+          </div>
+          <div class="form-item">
+            <label>有效开始日期</label>
+            <input v-model="form.validStart" type="date" />
+          </div>
+          <div class="form-item">
+            <label>有效结束日期</label>
+            <input v-model="form.validEnd" type="date" />
+          </div>
+          <div class="form-item">
+            <label>上课时间说明</label>
+            <input v-model="form.classTimeDesc" type="text" placeholder="如：每周一、三 09:00-10:30" />
+          </div>
+          <div class="form-item">
+            <label>适合年龄</label>
+            <input v-model="form.suitableAge" type="text" placeholder="如：6-7岁" />
+          </div>
+          <div class="form-item">
+            <label>招生名额（0 表示不限）</label>
+            <input v-model="form.maxStudents" type="number" placeholder="请输入招生名额" />
+          </div>
+          <div class="form-item">
+            <label>已报名人数</label>
+            <input v-model="form.enrolledCount" type="number" placeholder="请输入已报名人数" />
+          </div>
+          <div class="form-item">
+            <label>课程亮点（| 分隔）</label>
+            <input v-model="form.highlights" type="text" placeholder="如：拼音启蒙|阅读训练|写作提升" />
           </div>
           <div class="form-item">
             <label>学时</label>
@@ -95,6 +147,17 @@ const form = reactive({
   name: '',
   description: '',
   teacherId: null,
+  targetGrade: '',
+  subject: '',
+  teachMode: 1,
+  location: '',
+  validStart: '',
+  validEnd: '',
+  classTimeDesc: '',
+  maxStudents: 0,
+  enrolledCount: 0,
+  suitableAge: '',
+  highlights: '',
   hours: 0,
   fee: 0,
   status: 1
@@ -119,6 +182,7 @@ const formatCell = (v, type) => {
     leaveStatus: v => ['待审批','已通过','已驳回'][v] || '-',
     visitType: v => ['','上门','电话','线上'][v] || '-',
     orderStatus: v => ['待支付','已支付','已取消'][v] || '-',
+    teachMode: v => ['','线下授课','线上直播','线上线下混合'][v] || '-',
     msgStatus: v => v === 1 ? '已回复' : '待回复',
   }
   return (m[type] ? m[type](v) : v) ?? '-'
@@ -129,6 +193,17 @@ const resetForm = () => {
   Object.assign(form, { id: null, name: '',
   description: '',
   teacherId: null,
+  targetGrade: '',
+  subject: '',
+  teachMode: 1,
+  location: '',
+  validStart: '',
+  validEnd: '',
+  classTimeDesc: '',
+  maxStudents: 0,
+  enrolledCount: 0,
+  suitableAge: '',
+  highlights: '',
   hours: 0,
   fee: 0,
   status: 1 })
