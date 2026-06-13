@@ -41,6 +41,7 @@
     <view class="menu-link" bindtap="go" data-url="/pages/attendance/list">考勤信息浏览</view>
     <view class="menu-link" bindtap="go" data-url="/pages/exam/list">考试安排浏览</view>
     <view class="menu-link" bindtap="go" data-url="/pages/score/list">考试成绩浏览</view>
+    <view class="menu-link" bindtap="go" data-url="/pages/leave/list">请假申请</view>
     <view class="menu-link" bindtap="go" data-url="/pages/message/list">留言</view>
   </view>
 

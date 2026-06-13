@@ -8,5 +8,7 @@ module.exports = {
   attend: (n) => attendStatus[n] || '-',
   order: (n) => orderStatus[n] || '-',
   exam: (n) => examStatus[n] || '-',
-  msg: (n) => (n === 1 ? '已回复' : '待回复')
+  msg: (n) => (n === 1 ? '已回复' : '待回复'),
+  leaveType: (n) => ['', '事假', '病假', '其他'][n] || '-',
+  leaveStatus: (n) => ['待审批', '已通过', '已驳回', '已撤回'][n] || '-'
 }

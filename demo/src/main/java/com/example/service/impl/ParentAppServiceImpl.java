@@ -23,6 +23,7 @@ public class ParentAppServiceImpl implements ParentAppService {
     @Autowired private MessageService messageService;
     @Autowired private CourseOrderService courseOrderService;
     @Autowired private ParentService parentService;
+    @Autowired private LeaveRequestService leaveRequestService;
 
     private List<Student> studentsOf(Integer parentId) {
         return studentService.findAll().stream()
@@ -156,6 +157,68 @@ public class ParentAppServiceImpl implements ParentAppService {
         result.put("msg", r > 0 ? "订单创建成功" : "订单创建失败");
         result.put("orderNo", order.getOrderNo());
         result.put("orderId", order.getId());
+        return result;
+    }
+
+    @Override
+    public List<LeaveRequest> getLeaveRequests(Integer parentId) {
+        Set<Integer> studentIds = studentIdsOf(parentId);
+        if (studentIds.isEmpty()) {
+            return List.of();
+        }
+        return leaveRequestService.findAll().stream()
+                .filter(l -> studentIds.contains(l.getStudentId()))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Map<String, Object> addLeaveRequest(Integer parentId, LeaveRequest leaveRequest) {
+        Map<String, Object> result = new HashMap<>();
+        Parent parent = parentService.findById(parentId);
+        if (parent == null) {
+            result.put("code", 500);
+            result.put("msg", "家长信息不存在");
+            return result;
+        }
+        Set<Integer> studentIds = studentIdsOf(parentId);
+        if (leaveRequest.getStudentId() == null || !studentIds.contains(leaveRequest.getStudentId())) {
+            result.put("code", 500);
+            result.put("msg", "只能为本人的孩子申请请假");
+            return result;
+        }
+        leaveRequest.setApplicantId(parent.getUserId());
+        leaveRequest.setApplicantName(parent.getName());
+        leaveRequest.setStatus(0);
+        int r = leaveRequestService.insert(leaveRequest);
+        result.put("code", r > 0 ? 200 : 500);
+        result.put("msg", r > 0 ? "请假申请已提交" : "提交失败");
+        return result;
+    }
+
+    @Override
+    public Map<String, Object> withdrawLeaveRequest(Integer parentId, Integer leaveId) {
+        Map<String, Object> result = new HashMap<>();
+        LeaveRequest leave = leaveRequestService.findById(leaveId);
+        if (leave == null) {
+            result.put("code", 500);
+            result.put("msg", "请假记录不存在");
+            return result;
+        }
+        Set<Integer> studentIds = studentIdsOf(parentId);
+        if (!studentIds.contains(leave.getStudentId())) {
+            result.put("code", 500);
+            result.put("msg", "无权操作该请假记录");
+            return result;
+        }
+        if (leave.getStatus() == null || leave.getStatus() != 0) {
+            result.put("code", 500);
+            result.put("msg", "仅待审批的请假可以撤回");
+            return result;
+        }
+        leave.setStatus(3);
+        int r = leaveRequestService.update(leave);
+        result.put("code", r > 0 ? 200 : 500);
+        result.put("msg", r > 0 ? "撤回成功" : "撤回失败");
         return result;
     }
 

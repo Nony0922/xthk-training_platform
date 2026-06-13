@@ -12,6 +12,7 @@
     "pages/exam/list",
     "pages/score/list",
     "pages/message/list",
+    "pages/leave/list",
     "pages/profile/profile"
   ],
   "window": {

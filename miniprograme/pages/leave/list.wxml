@@ -1,0 +1,61 @@
+<view class="container">
+  <view class="action-bar">
+    <button class="btn-primary btn-sm" bindtap="toggleForm">{{showForm ? '收起表单' : '新建请假'}}</button>
+  </view>
+
+  <view wx:if="{{showForm}}" class="form-card">
+    <view class="form-item">
+      <text class="label">请假学生</text>
+      <picker wx:if="{{students.length > 0}}" mode="selector" range="{{studentNames}}" value="{{studentIndex}}" bindchange="onStudentChange">
+        <view class="picker-value">{{studentNames[studentIndex]}}</view>
+      </picker>
+      <view wx:else class="picker-value placeholder">暂无关联学生</view>
+    </view>
+    <view class="form-item">
+      <text class="label">请假类型</text>
+      <picker mode="selector" range="{{leaveTypes}}" value="{{leaveTypeIndex}}" bindchange="onLeaveTypeChange">
+        <view class="picker-value">{{leaveTypes[leaveTypeIndex]}}</view>
+      </picker>
+    </view>
+    <view class="form-item">
+      <text class="label">开始日期</text>
+      <picker mode="date" value="{{startDate}}" bindchange="onStartDateChange">
+        <view class="picker-value">{{startDate || '请选择开始日期'}}</view>
+      </picker>
+    </view>
+    <view class="form-item">
+      <text class="label">结束日期</text>
+      <picker mode="date" value="{{endDate}}" bindchange="onEndDateChange">
+        <view class="picker-value">{{endDate || '请选择结束日期'}}</view>
+      </picker>
+    </view>
+    <view class="form-item">
+      <text class="label">请假原因</text>
+      <textarea class="textarea" placeholder="请填写请假原因..." value="{{reason}}" bindinput="onReasonInput" maxlength="500" />
+    </view>
+    <button class="btn-primary" bindtap="submit">提交申请</button>
+  </view>
+
+  <view class="section-title">我的请假</view>
+  <view wx:if="{{list.length === 0}}" class="empty">暂无请假记录</view>
+  <view class="card" wx:for="{{list}}" wx:key="id">
+    <view class="card-header">
+      <text class="card-title">{{item.studentName || '学生'}}</text>
+      <text class="tag {{item.statusClass}}">{{item.statusText}}</text>
+    </view>
+    <view class="card-row"><text class="label">类型</text><text class="value">{{item.leaveTypeText}}</text></view>
+    <view class="card-row"><text class="label">开始</text><text class="value">{{item.startDate}}</text></view>
+    <view class="card-row"><text class="label">结束</text><text class="value">{{item.endDate}}</text></view>
+    <view class="card-row"><text class="label">原因</text><text class="value reason">{{item.reason}}</text></view>
+    <view wx:if="{{item.remark}}" class="remark-box">
+      <text class="remark-label">审批备注：</text>
+      <text>{{item.remark}}</text>
+    </view>
+    <view wx:if="{{item.approveTime}}" class="card-row">
+      <text class="label">审批时间</text>
+      <text class="value">{{item.approveTime}}</text>
+    </view>
+    <view class="card-row"><text class="label">申请时间</text><text class="value">{{item.createTime}}</text></view>
+    <button wx:if="{{item.status === 0}}" class="btn-outline btn-withdraw" bindtap="withdraw" data-id="{{item.id}}">撤回申请</button>
+  </view>
+</view>

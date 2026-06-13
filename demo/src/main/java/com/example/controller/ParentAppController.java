@@ -97,4 +97,19 @@ public class ParentAppController {
         int r = parentAppService.updateProfile(parent);
         return Map.of("code", r > 0 ? 200 : 500, "msg", r > 0 ? "保存成功" : "保存失败");
     }
+
+    @GetMapping("/parent/{parentId}/leaves")
+    public List<LeaveRequest> leaves(@PathVariable Integer parentId) {
+        return parentAppService.getLeaveRequests(parentId);
+    }
+
+    @PostMapping("/parent/{parentId}/leave")
+    public Map<String, Object> addLeave(@PathVariable Integer parentId, @RequestBody LeaveRequest leaveRequest) {
+        return parentAppService.addLeaveRequest(parentId, leaveRequest);
+    }
+
+    @PutMapping("/parent/{parentId}/leave/{leaveId}/withdraw")
+    public Map<String, Object> withdrawLeave(@PathVariable Integer parentId, @PathVariable Integer leaveId) {
+        return parentAppService.withdrawLeaveRequest(parentId, leaveId);
+    }
 }

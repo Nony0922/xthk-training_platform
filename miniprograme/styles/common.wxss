@@ -15,3 +15,4 @@ page { background: #f5f3ff; font-size: 28rpx; color: #374151; }
 .tag-green { background: #d1fae5; color: #065f46; }
 .tag-orange { background: #ffedd5; color: #c2410c; }
 .tag-gray { background: #f3f4f6; color: #6b7280; }
+.tag-red { background: #fee2e2; color: #b91c1c; }

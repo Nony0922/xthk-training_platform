@@ -21,4 +21,7 @@ public interface ParentAppService {
     int addMessage(Message message);
     Map<String, Object> createOrder(CourseOrder order);
     Map<String, Object> payOrder(Integer orderId);
+    List<LeaveRequest> getLeaveRequests(Integer parentId);
+    Map<String, Object> addLeaveRequest(Integer parentId, LeaveRequest leaveRequest);
+    Map<String, Object> withdrawLeaveRequest(Integer parentId, Integer leaveId);
 }
