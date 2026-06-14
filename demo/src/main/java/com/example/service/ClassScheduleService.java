@@ -5,6 +5,8 @@ import java.util.List;
 
 public interface ClassScheduleService {
     List<ClassSchedule> findAll();
+    List<ClassSchedule> findAllForTeacher(Integer userId, Integer teacherLevel, String semester);
+    List<String> findSemesters();
     ClassSchedule findById(Integer id);
     int insert(ClassSchedule entity);
     int update(ClassSchedule entity);

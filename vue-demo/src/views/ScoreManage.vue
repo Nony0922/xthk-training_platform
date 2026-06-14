@@ -3,34 +3,47 @@
     <div class="toolbar">
       <button class="btn btn-primary" @click="handleAdd">新增成绩</button>
     </div>
-    <div class="table-container">
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>考试</th>
-            <th>学生</th>
-            <th>分数</th>
-            <th>排名</th>
-            <th>备注</th>
-            <th>操作</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="item in list" :key="item.id">
-            <td>{{ item.id ?? '-' }}</td>
-            <td>{{ item.examName ?? '-' }}</td>
-            <td>{{ item.studentName ?? '-' }}</td>
-            <td>{{ item.score ?? '-' }}</td>
-            <td>{{ item.rankNum ?? '-' }}</td>
-            <td>{{ item.remark ?? '-' }}</td>
-            <td class="actions">
-              <button class="btn btn-sm btn-info" @click="handleEdit(item)">编辑</button>
-              <button class="btn btn-sm btn-danger" @click="handleDelete(item.id)">删除</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+    <div v-if="!groups.length" class="empty-tip">暂无成绩数据</div>
+
+    <div v-for="course in groups" :key="course.courseId" class="data-group">
+      <div class="group-header">
+        <span class="group-title">{{ course.courseName }}</span>
+        <span class="group-meta">{{ countScoreRows(course) }} 条成绩</span>
+      </div>
+      <div v-for="group in course.exams" :key="group.examId" class="subgroup">
+        <div class="subgroup-header exam-subgroup-header">
+          <div class="exam-group-left">
+            <span class="subgroup-title">{{ group.examName }}</span>
+            <span class="exam-group-sub">{{ group.className }} · {{ group.examDate }}</span>
+          </div>
+          <span class="subgroup-meta">{{ group.rows.length }} 名学生</span>
+        </div>
+        <div class="table-container">
+          <table class="data-table group-table">
+            <thead>
+              <tr>
+                <th>排名</th>
+                <th>学生</th>
+                <th>分数</th>
+                <th>备注</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="item in group.rows" :key="item.id">
+                <td>{{ item.rankNum ?? '-' }}</td>
+                <td>{{ item.studentName ?? '-' }}</td>
+                <td>{{ item.score ?? '-' }}</td>
+                <td>{{ item.remark ?? '-' }}</td>
+                <td class="actions">
+                  <button class="btn btn-sm btn-info" @click="handleEdit(item)">编辑</button>
+                  <button class="btn btn-sm btn-danger" @click="handleDelete(item.id)">删除</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
     <div v-if="dialogVisible" class="dialog-overlay" @click.self="dialogVisible = false">
       <div class="dialog">
@@ -70,10 +83,16 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 import { getScoreListApi, addScoreApi, updateScoreApi, deleteScoreApi } from '@/api/score'
 import { getExamListApi } from '@/api/exam'
 import { getStudentListApi } from '@/api/student'
+import { getScopeModeFromRoute } from '@/composables/useTeacherScope'
+import { groupScoresByCourseExam } from '@/utils/groupTeachingData'
+
+const route = useRoute()
+const scopeMode = () => getScopeModeFromRoute(route)
 
 const list = ref([])
 const dialogVisible = ref(false)
@@ -81,6 +100,11 @@ const isEdit = ref(false)
 const loading = ref(false)
 const exams = ref([])
 const students = ref([])
+
+const groups = computed(() => groupScoresByCourseExam(list.value, exams.value))
+
+const countScoreRows = (course) =>
+  course.exams.reduce((sum, exam) => sum + exam.rows.length, 0)
 
 const form = reactive({
   id: null,
@@ -126,7 +150,7 @@ const resetForm = () => {
 
 const loadList = async () => {
   try {
-    const res = await getScoreListApi()
+    const res = await getScoreListApi(scopeMode())
     list.value = res.data || []
   } catch (e) { alert(e.message) }
 }
@@ -167,8 +191,8 @@ const handleDelete = async (id) => {
 
 onMounted(async () => {
   loadList()
-  exams.value = (await getExamListApi()).data || []
-students.value = (await getStudentListApi()).data || []
+  exams.value = (await getExamListApi(scopeMode())).data || []
+students.value = (await getStudentListApi(scopeMode())).data || []
 })
 </script>
 

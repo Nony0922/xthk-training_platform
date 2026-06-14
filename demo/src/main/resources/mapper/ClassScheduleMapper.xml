@@ -18,6 +18,33 @@
     <select id="findClassIdsByTeacherId" resultType="java.lang.Integer">
         SELECT DISTINCT class_id FROM class_schedule WHERE teacher_id = #{teacherId} AND class_id IS NOT NULL
     </select>
+    <select id="findByTeacherId" resultType="com.example.entity.ClassSchedule">
+        SELECT cs.*, cl.name AS class_name, co.name AS course_name, t.name AS teacher_name
+        FROM class_schedule cs
+        LEFT JOIN clazz cl ON cs.class_id = cl.id
+        LEFT JOIN course co ON cs.course_id = co.id
+        LEFT JOIN teacher t ON cs.teacher_id = t.id
+        WHERE cs.teacher_id = #{teacherId}
+        <if test="semester != null and semester != ''">
+            AND cs.semester = #{semester}
+        </if>
+        ORDER BY cs.weekday, cs.start_time
+    </select>
+    <select id="findByClassIds" resultType="com.example.entity.ClassSchedule">
+        SELECT cs.*, cl.name AS class_name, co.name AS course_name, t.name AS teacher_name
+        FROM class_schedule cs
+        LEFT JOIN clazz cl ON cs.class_id = cl.id
+        LEFT JOIN course co ON cs.course_id = co.id
+        LEFT JOIN teacher t ON cs.teacher_id = t.id
+        WHERE cs.class_id IN
+        <foreach collection="classIds" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        <if test="semester != null and semester != ''">
+            AND cs.semester = #{semester}
+        </if>
+        ORDER BY cs.weekday, cs.start_time
+    </select>
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO class_schedule (class_id, course_id, teacher_id, weekday, start_time, end_time, room, semester) VALUES (#{classId}, #{courseId}, #{teacherId}, #{weekday}, #{startTime}, #{endTime}, #{room}, #{semester})
     </insert>

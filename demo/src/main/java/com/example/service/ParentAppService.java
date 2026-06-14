@@ -26,5 +26,7 @@ public interface ParentAppService {
     Map<String, Object> addLeaveRequest(Integer parentId, LeaveRequest leaveRequest);
     Map<String, Object> withdrawLeaveRequest(Integer parentId, Integer leaveId);
 
+    List<HomeVisit> getHomeVisits(Integer parentId);
+
     List<LearningReport> getLearningReports(Integer parentId);
 }

@@ -41,9 +41,9 @@
         <div class="dialog-body">
           <div class="form-item">
             <label>学生</label>
-            <select v-model="form.studentId"><option :value="null">请选择</option><option v-for="s in students" :key="s.id" :value="s.id">{{ s.name }}</option></select>
+            <select v-model="form.studentId"><option :value="null">请选择</option><option v-for="s in students" :key="s.id" :value="s.id">{{ s.name }}{{ s.className ? `（${s.className}）` : '' }}</option></select>
           </div>
-          <div class="form-item">
+          <div v-if="!isTeacher" class="form-item">
             <label>教师</label>
             <select v-model="form.teacherId"><option :value="null">请选择</option><option v-for="t in teachers" :key="t.id" :value="t.id">{{ t.name }}</option></select>
           </div>
@@ -82,7 +82,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { getHomeVisitListApi, addHomeVisitApi, updateHomeVisitApi, deleteHomeVisitApi } from '@/api/homeVisit'
 import { getStudentListApi } from '@/api/student'
 import { getTeacherListApi } from '@/api/teacher'
@@ -93,6 +93,15 @@ const isEdit = ref(false)
 const loading = ref(false)
 const students = ref([])
 const teachers = ref([])
+
+const isTeacher = computed(() => {
+  try {
+    const user = JSON.parse(localStorage.getItem('loginUser'))
+    return user?.role === 'teacher'
+  } catch {
+    return false
+  }
+})
 
 const form = reactive({
   id: null,
@@ -160,6 +169,18 @@ const handleEdit = (item) => {
 }
 
 const handleSubmit = async () => {
+  if (!form.studentId) {
+    alert('请选择学生')
+    return
+  }
+  if (!isTeacher.value && !form.teacherId) {
+    alert('请选择教师')
+    return
+  }
+  if (!form.visitDate) {
+    alert('请选择家访日期')
+    return
+  }
 
   try {
     loading.value = true
@@ -183,8 +204,10 @@ const handleDelete = async (id) => {
 
 onMounted(async () => {
   loadList()
-  students.value = (await getStudentListApi()).data || []
-teachers.value = (await getTeacherListApi()).data || []
+  students.value = (await getStudentListApi('homeroom')).data || []
+  if (!isTeacher.value) {
+    teachers.value = (await getTeacherListApi()).data || []
+  }
 })
 </script>
 

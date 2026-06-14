@@ -40,12 +40,26 @@
         <!-- 教师菜单 -->
         <template v-if="user?.role === 'teacher'">
           <div class="nav-section">
-            <div class="section-label">{{ user.teacherLevel === 2 ? '班主任功能' : '任课教师功能' }}</div>
+            <div class="section-label">任课老师功能</div>
             <router-link
-              v-for="item in teacherMenus"
+              v-for="item in teacherCommonMenus"
               :key="item.path"
               :to="item.path"
               class="nav-item"
+              active-class="active"
+            >
+              <span class="nav-icon">{{ item.icon }}</span>
+              {{ item.title }}
+            </router-link>
+          </div>
+
+          <div v-if="isHeadTeacher" class="nav-section">
+            <div class="section-label">班主任专有</div>
+            <router-link
+              v-for="item in headTeacherOnlyMenus"
+              :key="item.path"
+              :to="item.path"
+              class="nav-item nav-sub"
               active-class="active"
             >
               <span class="nav-icon">{{ item.icon }}</span>
@@ -100,34 +114,32 @@ const adminSchoolMenus = [
   { path: '/home/learning-report', title: 'AI 学情分析', icon: '📊' }
 ]
 
-const headTeacherMenus = [
-  { path: '/home/browse/announcements', title: '公告浏览', icon: '📢', breadcrumb: '班主任' },
+const teacherCommonMenus = [
+  { path: '/home/browse/announcements', title: '公告浏览', icon: '📢', breadcrumb: '教师' },
+  { path: '/home/browse/courses', title: '我的课程', icon: '📚', breadcrumb: '教师' },
+  { path: '/home/teacher/schedule', title: '我的课表', icon: '📅', breadcrumb: '教师' },
+  { path: '/home/teacher/exams', title: '考试管理', icon: '📝', breadcrumb: '教师' },
+  { path: '/home/teacher/subject/attendance', title: '授课考勤', icon: '✅', breadcrumb: '教师' },
+  { path: '/home/teacher/subject/scores', title: '授课成绩', icon: '🏆', breadcrumb: '教师' },
+  { path: '/home/teacher/learning-report', title: 'AI 学情分析', icon: '📊', breadcrumb: '教师' }
+]
+
+const headTeacherOnlyMenus = [
   { path: '/home/browse/students', title: '本班学生', icon: '👨‍🎓', breadcrumb: '班主任' },
   { path: '/home/browse/parents', title: '本班家长', icon: '👪', breadcrumb: '班主任' },
   { path: '/home/teacher/leave', title: '本班请假', icon: '📋', breadcrumb: '班主任' },
+  { path: '/home/teacher/home-visit', title: '家访管理', icon: '🏠', breadcrumb: '班主任' },
   { path: '/home/teacher/attendance', title: '本班考勤', icon: '✅', breadcrumb: '班主任' },
-  { path: '/home/teacher/scores', title: '本班成绩', icon: '🏆', breadcrumb: '班主任' },
-  { path: '/home/teacher/learning-report', title: 'AI 学情分析', icon: '📊', breadcrumb: '班主任' }
+  { path: '/home/teacher/scores', title: '本班成绩', icon: '🏆', breadcrumb: '班主任' }
 ]
 
-const subjectTeacherMenus = [
-  { path: '/home/browse/announcements', title: '公告浏览', icon: '📢', breadcrumb: '任课教师' },
-  { path: '/home/browse/courses', title: '我的课程', icon: '📚', breadcrumb: '任课教师' },
-  { path: '/home/teacher/exams', title: '考试管理', icon: '📝', breadcrumb: '任课教师' },
-  { path: '/home/teacher/subject/attendance', title: '授课考勤', icon: '✅', breadcrumb: '任课教师' },
-  { path: '/home/teacher/subject/scores', title: '授课成绩', icon: '🏆', breadcrumb: '任课教师' },
-  { path: '/home/teacher/learning-report', title: 'AI 学情分析', icon: '📊', breadcrumb: '任课教师' }
-]
-
-const teacherMenus = computed(() => {
-  return user.value?.teacherLevel === 2 ? headTeacherMenus : subjectTeacherMenus
-})
+const isHeadTeacher = computed(() => user.value?.teacherLevel === 2)
 
 const allRouteTitles = [
   { path: '/home/permission', title: '权限管理', breadcrumb: '权限管理' },
   ...adminSchoolMenus.map(m => ({ ...m, breadcrumb: '学校管理' })),
-  ...headTeacherMenus,
-  ...subjectTeacherMenus
+  ...teacherCommonMenus,
+  ...headTeacherOnlyMenus
 ]
 
 const user = computed(() => {
@@ -142,7 +154,7 @@ const roleText = computed(() => {
   const u = user.value
   if (!u) return ''
   if (u.role === 'admin') return '管理员'
-  if (u.role === 'teacher') return u.teacherLevel === 2 ? '班主任' : '任课教师'
+  if (u.role === 'teacher') return u.teacherLevel === 2 ? '班主任' : '教师'
   return u.role
 })
 

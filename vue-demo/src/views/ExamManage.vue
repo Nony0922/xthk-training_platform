@@ -3,38 +3,48 @@
     <div class="toolbar">
       <button class="btn btn-primary" @click="handleAdd">新增考试</button>
     </div>
-    <div class="table-container">
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>考试名称</th>
-            <th>课程</th>
-            <th>班级</th>
-            <th>考试日期</th>
-            <th>地点</th>
-            <th>总分</th>
-            <th>状态</th>
-            <th>操作</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="item in list" :key="item.id">
-            <td>{{ item.id ?? '-' }}</td>
-            <td>{{ item.name ?? '-' }}</td>
-            <td>{{ item.courseName ?? '-' }}</td>
-            <td>{{ item.className ?? '-' }}</td>
-            <td>{{ item.examDate ?? '-' }}</td>
-            <td>{{ item.location ?? '-' }}</td>
-            <td>{{ item.totalScore ?? '-' }}</td>
-            <td>{{ formatCell(item.status, 'examStatus') }}</td>
-            <td class="actions">
-              <button class="btn btn-sm btn-info" @click="handleEdit(item)">编辑</button>
-              <button class="btn btn-sm btn-danger" @click="handleDelete(item.id)">删除</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+    <div v-if="!groups.length" class="empty-tip">暂无考试数据</div>
+
+    <div v-for="course in groups" :key="course.courseId" class="data-group">
+      <div class="group-header">
+        <span class="group-title">{{ course.courseName }}</span>
+        <span class="group-meta">{{ countExamRows(course) }} 场考试</span>
+      </div>
+      <div v-for="klass in course.classes" :key="klass.classId" class="subgroup">
+        <div class="subgroup-header">
+          <span class="subgroup-title">{{ klass.className }}</span>
+          <span class="subgroup-meta">{{ klass.rows.length }} 场</span>
+        </div>
+        <div class="table-container">
+          <table class="data-table group-table">
+            <thead>
+              <tr>
+                <th>考试名称</th>
+                <th>考试日期</th>
+                <th>时间</th>
+                <th>地点</th>
+                <th>总分</th>
+                <th>状态</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="item in klass.rows" :key="item.id">
+                <td>{{ item.name ?? '-' }}</td>
+                <td>{{ item.examDate ?? '-' }}</td>
+                <td>{{ formatTimeRange(item) }}</td>
+                <td>{{ item.location ?? '-' }}</td>
+                <td>{{ item.totalScore ?? '-' }}</td>
+                <td>{{ formatCell(item.status, 'examStatus') }}</td>
+                <td class="actions">
+                  <button class="btn btn-sm btn-info" @click="handleEdit(item)">编辑</button>
+                  <button class="btn btn-sm btn-danger" @click="handleDelete(item.id)">删除</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
     <div v-if="dialogVisible" class="dialog-overlay" @click.self="dialogVisible = false">
       <div class="dialog">
@@ -94,10 +104,16 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 import { getExamListApi, addExamApi, updateExamApi, deleteExamApi } from '@/api/exam'
 import { getClazzListApi } from '@/api/clazz'
 import { getCourseListApi } from '@/api/course'
+import { getScopeModeFromRoute } from '@/composables/useTeacherScope'
+import { groupExamsByCourseClass } from '@/utils/groupTeachingData'
+
+const route = useRoute()
+const scopeMode = () => getScopeModeFromRoute(route)
 
 const list = ref([])
 const dialogVisible = ref(false)
@@ -105,6 +121,18 @@ const isEdit = ref(false)
 const loading = ref(false)
 const classes = ref([])
 const courses = ref([])
+
+const groups = computed(() => groupExamsByCourseClass(list.value))
+
+const countExamRows = (course) =>
+  course.classes.reduce((sum, klass) => sum + klass.rows.length, 0)
+
+const formatTimeRange = (item) => {
+  const start = (item.startTime || '').substring(0, 5)
+  const end = (item.endTime || '').substring(0, 5)
+  if (start && end) return `${start} - ${end}`
+  return start || end || '-'
+}
 
 const form = reactive({
   id: null,
@@ -160,7 +188,7 @@ const resetForm = () => {
 
 const loadList = async () => {
   try {
-    const res = await getExamListApi()
+    const res = await getExamListApi(scopeMode())
     list.value = res.data || []
   } catch (e) { alert(e.message) }
 }

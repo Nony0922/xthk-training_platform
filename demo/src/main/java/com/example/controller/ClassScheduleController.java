@@ -16,7 +16,17 @@ public class ClassScheduleController {
     private ClassScheduleService classScheduleService;
 
     @GetMapping("/list")
-    public List<ClassSchedule> findAll() { return classScheduleService.findAll(); }
+    public List<ClassSchedule> findAll(@RequestParam(required = false) Integer scopeUserId,
+                                       @RequestParam(required = false) Integer teacherLevel,
+                                       @RequestParam(required = false) String semester) {
+        if (scopeUserId != null && teacherLevel != null) {
+            return classScheduleService.findAllForTeacher(scopeUserId, teacherLevel, semester);
+        }
+        return classScheduleService.findAll();
+    }
+
+    @GetMapping("/semesters")
+    public List<String> findSemesters() { return classScheduleService.findSemesters(); }
 
     @GetMapping("/{id:\\d+}")
     public ClassSchedule findById(@PathVariable Integer id) { return classScheduleService.findById(id); }

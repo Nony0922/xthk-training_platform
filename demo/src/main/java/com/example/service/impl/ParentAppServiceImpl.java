@@ -24,6 +24,7 @@ public class ParentAppServiceImpl implements ParentAppService {
     @Autowired private CourseOrderService courseOrderService;
     @Autowired private ParentService parentService;
     @Autowired private LeaveRequestService leaveRequestService;
+    @Autowired private HomeVisitService homeVisitService;
     @Autowired private LearningReportService learningReportService;
 
     private List<Student> studentsOf(Integer parentId) {
@@ -175,6 +176,22 @@ public class ParentAppServiceImpl implements ParentAppService {
         }
         return leaveRequestService.findAll().stream()
                 .filter(l -> studentIds.contains(l.getStudentId()))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<HomeVisit> getHomeVisits(Integer parentId) {
+        Set<Integer> studentIds = studentIdsOf(parentId);
+        if (studentIds.isEmpty()) {
+            return List.of();
+        }
+        return homeVisitService.findAll().stream()
+                .filter(v -> studentIds.contains(v.getStudentId()))
+                .sorted((a, b) -> {
+                    String da = a.getVisitDate() != null ? a.getVisitDate() : "";
+                    String db = b.getVisitDate() != null ? b.getVisitDate() : "";
+                    return db.compareTo(da);
+                })
                 .collect(Collectors.toList());
     }
 

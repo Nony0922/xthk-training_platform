@@ -3,36 +3,44 @@
     <div class="toolbar">
       <button class="btn btn-primary" @click="handleAdd">新增考勤</button>
     </div>
-    <div class="table-container">
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>学生</th>
-            <th>班级</th>
-            <th>课程</th>
-            <th>日期</th>
-            <th>状态</th>
-            <th>备注</th>
-            <th>操作</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="item in list" :key="item.id">
-            <td>{{ item.id ?? '-' }}</td>
-            <td>{{ item.studentName ?? '-' }}</td>
-            <td>{{ item.className ?? '-' }}</td>
-            <td>{{ item.courseName ?? '-' }}</td>
-            <td>{{ item.attendDate ?? '-' }}</td>
-            <td>{{ formatCell(item.status, 'attendanceStatus') }}</td>
-            <td>{{ item.remark ?? '-' }}</td>
-            <td class="actions">
-              <button class="btn btn-sm btn-info" @click="handleEdit(item)">编辑</button>
-              <button class="btn btn-sm btn-danger" @click="handleDelete(item.id)">删除</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+    <div v-if="!groups.length" class="empty-tip">暂无考勤数据</div>
+
+    <div v-for="course in groups" :key="course.courseId" class="data-group">
+      <div class="group-header">
+        <span class="group-title">{{ course.courseName }}</span>
+        <span class="group-meta">{{ countAttendanceRows(course) }} 条记录</span>
+      </div>
+      <div v-for="klass in course.classes" :key="klass.classId" class="subgroup">
+        <div class="subgroup-header">
+          <span class="subgroup-title">{{ klass.className }}</span>
+          <span class="subgroup-meta">{{ klass.rows.length }} 条</span>
+        </div>
+        <div class="table-container">
+          <table class="data-table group-table">
+            <thead>
+              <tr>
+                <th>学生</th>
+                <th>日期</th>
+                <th>状态</th>
+                <th>备注</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="item in klass.rows" :key="item.id">
+                <td>{{ item.studentName ?? '-' }}</td>
+                <td>{{ item.attendDate ?? '-' }}</td>
+                <td>{{ formatCell(item.status, 'attendanceStatus') }}</td>
+                <td>{{ item.remark ?? '-' }}</td>
+                <td class="actions">
+                  <button class="btn btn-sm btn-info" @click="handleEdit(item)">编辑</button>
+                  <button class="btn btn-sm btn-danger" @click="handleDelete(item.id)">删除</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
     <div v-if="dialogVisible" class="dialog-overlay" @click.self="dialogVisible = false">
       <div class="dialog">
@@ -82,11 +90,17 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 import { getAttendanceListApi, addAttendanceApi, updateAttendanceApi, deleteAttendanceApi } from '@/api/attendance'
 import { getStudentListApi } from '@/api/student'
 import { getClazzListApi } from '@/api/clazz'
 import { getCourseListApi } from '@/api/course'
+import { getScopeModeFromRoute } from '@/composables/useTeacherScope'
+import { groupAttendanceByCourseClass } from '@/utils/groupTeachingData'
+
+const route = useRoute()
+const scopeMode = () => getScopeModeFromRoute(route)
 
 const list = ref([])
 const dialogVisible = ref(false)
@@ -95,6 +109,11 @@ const loading = ref(false)
 const students = ref([])
 const classes = ref([])
 const courses = ref([])
+
+const groups = computed(() => groupAttendanceByCourseClass(list.value))
+
+const countAttendanceRows = (course) =>
+  course.classes.reduce((sum, klass) => sum + klass.rows.length, 0)
 
 const form = reactive({
   id: null,
@@ -142,7 +161,7 @@ const resetForm = () => {
 
 const loadList = async () => {
   try {
-    const res = await getAttendanceListApi()
+    const res = await getAttendanceListApi(scopeMode())
     list.value = res.data || []
   } catch (e) { alert(e.message) }
 }
@@ -183,7 +202,7 @@ const handleDelete = async (id) => {
 
 onMounted(async () => {
   loadList()
-  students.value = (await getStudentListApi()).data || []
+  students.value = (await getStudentListApi(scopeMode())).data || []
 classes.value = (await getClazzListApi()).data || []
 courses.value = (await getCourseListApi()).data || []
 })

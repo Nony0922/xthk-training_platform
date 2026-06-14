@@ -1,0 +1,29 @@
+@import '../../styles/common.wxss';
+@import '../../styles/table.wxss';
+
+.visit-card {
+  margin: 16rpx 24rpx 24rpx;
+  padding: 24rpx;
+  background: #fafafa;
+  border-radius: 12rpx;
+  border: 1rpx solid #ede9fe;
+}
+
+.visit-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12rpx;
+}
+
+.visit-date {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.content {
+  max-width: 420rpx;
+  text-align: right;
+  word-break: break-all;
+}

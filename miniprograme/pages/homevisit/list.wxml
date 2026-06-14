@@ -1,0 +1,30 @@
+<view class="container">
+  <view wx:if="{{studentCount > 0}}" class="page-tip">{{tip}}</view>
+
+  <view wx:if="{{studentCount === 0}}" class="empty">暂无关联学生</view>
+  <view wx:elif="{{!hasData}}" class="empty">暂无家访记录</view>
+
+  <view class="student-section" wx:for="{{groups}}" wx:key="studentId">
+    <view class="student-header">
+      <view class="student-avatar">{{item.studentName[0]}}</view>
+      <view class="student-info">
+        <text class="student-name">{{item.studentName}}</text>
+        <text class="student-class">{{item.className}}</text>
+      </view>
+      <text class="record-count">{{item.rows.length}} 条记录</text>
+    </view>
+
+    <view wx:if="{{item.rows.length === 0}}" class="section-empty">暂无家访记录</view>
+    <view class="visit-card" wx:for="{{item.rows}}" wx:for-item="row" wx:key="rowKey">
+      <view class="visit-card-header">
+        <text class="visit-date">{{row.visitDate}}</text>
+        <text class="tag tag-purple">{{row.visitTypeText}}</text>
+      </view>
+      <view class="card-row"><text class="label">班主任</text><text class="value">{{row.teacherName}}</text></view>
+      <view class="card-row"><text class="label">家访内容</text><text class="value content">{{row.content}}</text></view>
+      <view class="card-row"><text class="label">家长反馈</text><text class="value content">{{row.feedback}}</text></view>
+      <view wx:if="{{row.showNextPlan}}" class="card-row"><text class="label">后续计划</text><text class="value content">{{row.nextPlan}}</text></view>
+      <view class="card-row"><text class="label">登记时间</text><text class="value">{{row.createTime}}</text></view>
+    </view>
+  </view>
+</view>

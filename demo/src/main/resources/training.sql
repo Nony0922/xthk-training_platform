@@ -288,19 +288,21 @@ CREATE TABLE learning_report (
 
 -- ========== 初始数据 ==========
 
--- 系统用户：admin/teacher1(班主任)/teacher2(任课)/parent1~parent4
+-- 系统用户：admin / teacher1(班主任兼课) / teacher2(任课) / teacher3(语文任课) / parent1~parent4
 INSERT INTO sys_user (username, password, name, role, teacher_level, phone) VALUES
 ('admin', '123456', '教务处管理员', 'admin', NULL, '13800000001'),
 ('teacher1', '123456', '张老师', 'teacher', 2, '13800000002'),
 ('teacher2', '123456', '李老师', 'teacher', 1, '13800000003'),
+('teacher3', '123456', '王老师', 'teacher', 1, '13800000008'),
 ('parent1', '123456', '王家长', 'parent', NULL, '13800000004'),
 ('parent2', '123456', '李家长', 'parent', NULL, '13800000005'),
 ('parent3', '123456', '陈家长', 'parent', NULL, '13800000006'),
 ('parent4', '123456', '张家长', 'parent', NULL, '13800000007');
 
 INSERT INTO teacher (user_id, name, gender, phone, teacher_level, subject, title, hire_date) VALUES
-(2, '张老师', 1, '13800000002', 2, '语文', '高级教师', '2020-09-01'),
-(3, '李老师', 2, '13800000003', 1, '数学', '中级教师', '2021-03-01');
+(2, '张老师', 1, '13800000002', 2, '班级管理/英语', '高级教师', '2020-09-01'),
+(3, '李老师', 2, '13800000003', 1, '数学', '中级教师', '2021-03-01'),
+(4, '王老师', 1, '13800000008', 1, '语文', '中级教师', '2021-09-01');
 
 INSERT INTO parent (user_id, name, phone, address)
 SELECT id, '王家长', '13800000004', '成都市武侯区天府大道100号' FROM sys_user WHERE username = 'parent1'
@@ -332,21 +334,24 @@ UNION ALL
 SELECT '张小洋', 1, '2017-04-18', 2, p.id, '2024-09-01' FROM parent p WHERE p.phone = '13800000007';
 
 INSERT INTO course (name, description, teacher_id, hours, fee, status, target_grade, subject, teach_mode, location, valid_start, valid_end, class_time_desc, max_students, enrolled_count, suitable_age, highlights) VALUES
-('小学语文基础', '面向一年级学生的语文基础课程，系统培养拼音、识字、阅读与写作能力，小班制互动教学。', 1, 48, 3600.00, 1, '一年级', '语文', 1, 'A101 教室（武侯校区）', '2025-03-01', '2025-06-30', '每周一、三 09:00-10:30', 30, 12, '6-7岁', '拼音启蒙|课外阅读|写作训练|小班互动'),
+('小学语文基础', '面向一年级学生的语文基础课程，系统培养拼音、识字、阅读与写作能力，小班制互动教学。', 3, 48, 3600.00, 1, '一年级', '语文', 1, 'A101 教室（武侯校区）', '2025-03-01', '2025-06-30', '每周一、三 09:00-10:30', 30, 12, '6-7岁', '拼音启蒙|课外阅读|写作训练|小班互动'),
 ('小学数学提高', '面向二年级学生的数学提高课程，强化逻辑思维与综合应用能力，含阶段测评与错题讲解。', 2, 36, 2800.00, 1, '二年级', '数学', 1, 'B203 教室（武侯校区）', '2025-03-01', '2025-06-30', '每周二、四 14:00-15:30', 25, 8, '7-8岁', '思维训练|应用题突破|阶段测评|错题讲解'),
-('英语口语启蒙', '面向初学者的英语口语启蒙课程，线上直播互动，外教式情景对话练习，支持回放复习。', 2, 24, 1800.00, 1, '全年级', '英语', 2, '线上直播（腾讯会议）', '2025-03-15', '2025-05-31', '每周六 09:30-11:00', 50, 20, '6-10岁', '情景对话|发音纠正|直播互动|课程回放');
+('英语口语启蒙', '面向初学者的英语口语启蒙课程，线上直播互动，外教式情景对话练习，支持回放复习。', 1, 24, 1800.00, 1, '全年级', '英语', 2, '线上直播（腾讯会议）', '2025-03-15', '2025-05-31', '每周六 09:30-11:00', 50, 20, '6-10岁', '情景对话|发音纠正|直播互动|课程回放');
 
 INSERT INTO class_schedule (class_id, course_id, teacher_id, weekday, start_time, end_time, room, semester) VALUES
-(1, 1, 1, 1, '09:00:00', '10:30:00', 'A101', '2025春季'),
-(1, 1, 1, 3, '09:00:00', '10:30:00', 'A101', '2025春季'),
+(1, 1, 3, 1, '09:00:00', '10:30:00', 'A101', '2025春季'),
+(1, 1, 3, 3, '09:00:00', '10:30:00', 'A101', '2025春季'),
+(1, 3, 1, 6, '09:30:00', '11:00:00', 'C305', '2025春季'),
 (2, 2, 2, 2, '14:00:00', '15:30:00', 'B203', '2025春季'),
 (2, 2, 2, 4, '14:00:00', '15:30:00', 'B203', '2025春季'),
 (2, 3, 1, 1, '09:30:00', '11:00:00', 'C305', '2025春季');
 
 INSERT INTO teaching_progress (class_id, course_id, teacher_id, chapter, content, planned_date, actual_date, status) VALUES
-(1, 1, 1, '第一单元', '拼音入门与基础识字', '2025-03-01', '2025-03-01', 2),
-(1, 1, 1, '第二单元', '短文阅读训练', '2025-03-15', NULL, 1),
-(2, 2, 2, '第一讲', '加减法综合应用', '2025-03-05', '2025-03-05', 2);
+(1, 1, 3, '第一单元', '拼音入门与基础识字', '2025-03-01', '2025-03-01', 2),
+(1, 1, 3, '第二单元', '短文阅读训练', '2025-03-15', NULL, 1),
+(2, 2, 2, '第一讲', '加减法综合应用', '2025-03-05', '2025-03-05', 2),
+(1, 3, 1, '第一讲', '日常问候与自我介绍', '2025-03-16', '2025-03-16', 2),
+(2, 3, 1, '第一讲', '情景对话：购物用语', '2025-03-03', '2025-03-03', 2);
 
 INSERT INTO announcement (title, content, publisher_id, publisher_name, target_role, status, publish_time) VALUES
 ('2025春季开学通知', '各位家长和同学，2025春季班将于3月1日正式开课，请按时到校。', 1, '教务处管理员', 'all', 1, NOW()),
@@ -357,7 +362,9 @@ INSERT INTO exam (name, course_id, class_id, exam_date, start_time, end_time, lo
 ('语文单元测验', 1, 1, '2025-03-20', '09:00:00', '10:00:00', 'A101', 100, 2),
 ('语文期末模拟', 1, 1, '2025-05-10', '09:00:00', '10:30:00', 'A101', 100, 0),
 ('数学单元测试', 2, 2, '2025-04-10', '14:00:00', '15:00:00', 'B203', 100, 0),
-('数学阶段测评', 2, 2, '2025-04-20', '14:00:00', '15:00:00', 'B203', 100, 0);
+('数学阶段测评', 2, 2, '2025-04-20', '14:00:00', '15:00:00', 'B203', 100, 0),
+('英语口语阶段测评', 3, 1, '2025-04-08', '09:30:00', '11:00:00', 'C305', 100, 0),
+('英语口语单元测试', 3, 2, '2025-04-12', '09:30:00', '11:00:00', 'C305', 100, 0);
 -- 注：status 入库值仅供参考，接口返回时由 ExamStatusUtil 按日期时间自动计算
 
 INSERT INTO score (exam_id, student_id, score, rank_num)
@@ -378,7 +385,14 @@ JOIN (
   SELECT '数学单元测试', '李小红', 88.0, 1 UNION ALL
   SELECT '数学单元测试', '张小洋', 72.0, 2 UNION ALL
   SELECT '数学阶段测评', '李小红', 91.0, 1 UNION ALL
-  SELECT '数学阶段测评', '张小洋', 78.5, 2
+  SELECT '数学阶段测评', '张小洋', 78.5, 2 UNION ALL
+  SELECT '英语口语阶段测评', '王小明', 93.0, 1 UNION ALL
+  SELECT '英语口语阶段测评', '陈小华', 89.5, 2 UNION ALL
+  SELECT '英语口语阶段测评', '赵小强', 86.0, 3 UNION ALL
+  SELECT '英语口语阶段测评', '刘小丽', 81.0, 4 UNION ALL
+  SELECT '英语口语阶段测评', '周小杰', 78.0, 5 UNION ALL
+  SELECT '英语口语单元测试', '李小红', 90.0, 1 UNION ALL
+  SELECT '英语口语单元测试', '张小洋', 75.5, 2
 ) v ON e.name = v.en AND s.name = v.n;
 
 INSERT INTO attendance (student_id, class_id, course_id, attend_date, status, recorder_id)
@@ -417,7 +431,17 @@ JOIN (
   SELECT '张小洋', 2, 2, '2025-03-02', 1, 3 UNION ALL
   SELECT '张小洋', 2, 2, '2025-03-04', 1, 3 UNION ALL
   SELECT '张小洋', 2, 2, '2025-03-06', 4, 3 UNION ALL
-  SELECT '张小洋', 2, 2, '2025-03-09', 4, 3
+  SELECT '张小洋', 2, 2, '2025-03-09', 4, 3 UNION ALL
+  SELECT '王小明', 1, 3, '2025-03-16', 1, 1 UNION ALL
+  SELECT '王小明', 1, 3, '2025-03-23', 1, 1 UNION ALL
+  SELECT '陈小华', 1, 3, '2025-03-16', 2, 1 UNION ALL
+  SELECT '赵小强', 1, 3, '2025-03-16', 1, 1 UNION ALL
+  SELECT '刘小丽', 1, 3, '2025-03-23', 1, 1 UNION ALL
+  SELECT '周小杰', 1, 3, '2025-03-16', 4, 1 UNION ALL
+  SELECT '李小红', 2, 3, '2025-03-03', 1, 1 UNION ALL
+  SELECT '李小红', 2, 3, '2025-03-10', 1, 1 UNION ALL
+  SELECT '张小洋', 2, 3, '2025-03-03', 2, 1 UNION ALL
+  SELECT '张小洋', 2, 3, '2025-03-10', 1, 1
 ) c ON s.name = c.n AND s.class_id = c.class_id;
 
 INSERT INTO abnormal_attendance (attendance_id, student_id, abnormal_type, description, handle_status)
@@ -448,14 +472,25 @@ UNION ALL
 SELECT p.id, '周小杰能否申请调课？', 1 FROM parent p WHERE p.phone = '13800000006';
 
 INSERT INTO course_order (order_no, parent_id, course_id, course_name, teacher_name, hours, fee, status)
-SELECT 'ORD20250301001', p.id, 1, '小学语文基础', '张老师', 48, 3600.00, 1 FROM parent p WHERE p.phone = '13800000004'
+SELECT 'ORD20250301001', p.id, 1, '小学语文基础', '王老师', 48, 3600.00, 1 FROM parent p WHERE p.phone = '13800000004'
 UNION ALL
-SELECT 'ORD20250315002', p.id, 3, '英语口语启蒙', '李老师', 24, 1800.00, 0 FROM parent p WHERE p.phone = '13800000004'
+SELECT 'ORD20250315002', p.id, 3, '英语口语启蒙', '张老师', 24, 1800.00, 0 FROM parent p WHERE p.phone = '13800000004'
 UNION ALL
-SELECT 'ORD20250320003', p.id, 1, '小学语文基础', '张老师', 48, 3600.00, 1 FROM parent p WHERE p.phone = '13800000005'
+SELECT 'ORD20250320003', p.id, 1, '小学语文基础', '王老师', 48, 3600.00, 1 FROM parent p WHERE p.phone = '13800000005'
 UNION ALL
 SELECT 'ORD20250322004', p.id, 2, '小学数学提高', '李老师', 36, 2800.00, 0 FROM parent p WHERE p.phone = '13800000007';
 
 -- 说明：本文件为唯一数据库脚本，包含建库、建表及全部初始/演示数据（含 AI 学情分析、家长绑定、多家长多孩家庭等）。
+--
+-- 教师角色模型（与 PC 教师端菜单一致）：
+--   • teacher_level=1：任课教师，仅使用「教师功能」菜单（授课相关）。
+--   • teacher_level=2：班主任，使用全部「教师功能」+ 额外「班主任专有」菜单（本班学生/家长、请假、家访、本班考勤/成绩）。
+--   • 班主任可同时任课：张老师(teacher1) 任一年级1班班主任，并兼任「英语口语启蒙」授课；语文由王老师(teacher3) 任课。
+--
+-- 数据范围（接口 scopeUserId + teacherLevel，前端 scopeMode）：
+--   • teaching（teacherLevel=1）：本人授课课程、课表中 teacher_id 匹配的安排、授课班级考试/考勤/成绩。
+--   • homeroom（teacherLevel=2）：head_teacher_id 关联班级的学生、家长、请假、家访、本班考勤/成绩。
+--   • 我的课表：班主任合并展示「本班完整课表 + 本人授课安排」；任课教师仅展示本人授课安排。
+--
 -- 家长与学生：parent1 王小明+李小红；parent2 陈小华+赵小强；parent3 刘小丽+周小杰；parent4 张小洋（每位家长最多 2 孩）。
 -- 使用方式：在 MySQL 中完整执行本文件即可，无需再执行其他 SQL 脚本。

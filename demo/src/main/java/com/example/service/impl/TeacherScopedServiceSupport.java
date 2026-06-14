@@ -13,9 +13,27 @@ abstract class TeacherScopedServiceSupport {
 
     @Autowired
     protected TeacherScopeService teacherScopeService;
+    @Autowired
+    protected CourseMapper courseMapper;
 
     protected List<Integer> classIds(Integer userId, Integer teacherLevel) {
         return teacherScopeService.resolveClassIds(userId, teacherLevel);
+    }
+
+    protected Set<Integer> teachingCourseIds(Integer userId) {
+        Integer teacherId = teacherScopeService.resolveTeacherId(userId);
+        if (teacherId == null) {
+            return Set.of();
+        }
+        return courseMapper.findAll().stream()
+                .filter(course -> Objects.equals(course.getTeacherId(), teacherId))
+                .map(Course::getId)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+    }
+
+    protected boolean isTeachingScope(Integer teacherLevel) {
+        return teacherLevel != null && teacherLevel == 1;
     }
 
     protected List<Student> scopedStudents(List<Student> all, Integer userId, Integer teacherLevel) {

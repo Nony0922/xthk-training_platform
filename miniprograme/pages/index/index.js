@@ -16,6 +16,7 @@ Page({
       { name: '考试成绩', icon: '🏆', url: '/pages/score/list' },
       { name: '学情报告', icon: '📊', url: '/pages/report/list' },
       { name: '请假申请', icon: '📋', url: '/pages/leave/list' },
+      { name: '家访记录', icon: '🏠', url: '/pages/homevisit/list' },
       { name: '留言', icon: '💬', url: '/pages/message/list' }
     ],
     announcements: []

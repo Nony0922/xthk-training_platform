@@ -3,38 +3,44 @@
     <div v-if="!readOnly" class="toolbar">
       <button class="btn btn-primary" @click="handleAdd">新增学生</button>
     </div>
-    <div class="table-container">
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>姓名</th>
-            <th>性别</th>
-            <th>班级</th>
-            <th>家长</th>
-            <th>电话</th>
-            <th>入学日期</th>
-            <th>状态</th>
-            <th v-if="!readOnly">操作</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="item in list" :key="item.id">
-            <td>{{ item.id ?? '-' }}</td>
-            <td>{{ item.name ?? '-' }}</td>
-            <td>{{ formatCell(item.gender, 'gender') }}</td>
-            <td>{{ item.className ?? '-' }}</td>
-            <td>{{ item.parentName ?? '-' }}</td>
-            <td>{{ item.phone ?? '-' }}</td>
-            <td>{{ item.enrollDate ?? '-' }}</td>
-            <td>{{ formatCell(item.status, 'status') }}</td>
-            <td v-if="!readOnly" class="actions">
-              <button class="btn btn-sm btn-info" @click="handleEdit(item)">编辑</button>
-              <button class="btn btn-sm btn-danger" @click="handleDelete(item.id)">删除</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+    <div v-if="!groups.length" class="empty-tip">暂无学生数据</div>
+
+    <div v-for="group in groups" :key="group.classId" class="data-group">
+      <div class="group-header">
+        <span class="group-title">{{ group.className }}</span>
+        <span class="group-meta">{{ group.rows.length }} 名学生</span>
+      </div>
+      <div class="table-container">
+        <table class="data-table group-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>姓名</th>
+              <th>性别</th>
+              <th>家长</th>
+              <th>电话</th>
+              <th>入学日期</th>
+              <th>状态</th>
+              <th v-if="!readOnly">操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="item in group.rows" :key="item.id">
+              <td>{{ item.id ?? '-' }}</td>
+              <td>{{ item.name ?? '-' }}</td>
+              <td>{{ formatCell(item.gender, 'gender') }}</td>
+              <td>{{ item.parentName ?? '-' }}</td>
+              <td>{{ item.phone ?? '-' }}</td>
+              <td>{{ item.enrollDate ?? '-' }}</td>
+              <td>{{ formatCell(item.status, 'status') }}</td>
+              <td v-if="!readOnly" class="actions">
+                <button class="btn btn-sm btn-info" @click="handleEdit(item)">编辑</button>
+                <button class="btn btn-sm btn-danger" @click="handleDelete(item.id)">删除</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
     <div v-if="!readOnly && dialogVisible" class="dialog-overlay" @click.self="dialogVisible = false">
       <div class="dialog">
@@ -92,13 +98,18 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 import { getStudentListApi, addStudentApi, updateStudentApi, deleteStudentApi } from '@/api/student'
 import { getClazzListApi } from '@/api/clazz'
 import { getParentListApi } from '@/api/parent'
 import { useReadOnly } from '@/composables/useReadOnly'
+import { getScopeModeFromRoute } from '@/composables/useTeacherScope'
+import { groupByClass } from '@/utils/groupTeachingData'
 
+const route = useRoute()
 const readOnly = useReadOnly()
+const scopeMode = () => getScopeModeFromRoute(route)
 
 const list = ref([])
 const dialogVisible = ref(false)
@@ -106,6 +117,8 @@ const isEdit = ref(false)
 const loading = ref(false)
 const classes = ref([])
 const parents = ref([])
+
+const groups = computed(() => groupByClass(list.value))
 
 const form = reactive({
   id: null,
@@ -157,7 +170,7 @@ const resetForm = () => {
 
 const loadList = async () => {
   try {
-    const res = await getStudentListApi()
+    const res = await getStudentListApi(scopeMode())
     list.value = res.data || []
   } catch (e) { alert(e.message) }
 }

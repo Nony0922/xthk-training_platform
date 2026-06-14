@@ -123,6 +123,11 @@ public class ParentAppController {
         return parentAppService.withdrawLeaveRequest(parentId, leaveId);
     }
 
+    @GetMapping("/parent/{parentId}/home-visits")
+    public List<HomeVisit> homeVisits(@PathVariable Integer parentId) {
+        return parentAppService.getHomeVisits(parentId);
+    }
+
     @GetMapping("/parent/{parentId}/reports")
     public List<LearningReport> reports(@PathVariable Integer parentId) {
         return parentAppService.getLearningReports(parentId);

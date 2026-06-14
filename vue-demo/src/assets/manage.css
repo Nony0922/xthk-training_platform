@@ -167,3 +167,104 @@
 .badge-warning { background: #fef3c7; color: #92400e; }
 .badge-danger { background: #fee2e2; color: #991b1b; }
 .badge-info { background: #dbeafe; color: #1e40af; }
+
+.empty-tip {
+  padding: 48px 24px;
+  text-align: center;
+  color: #9ca3af;
+  background: #f9fafb;
+  border: 1px dashed #d1d5db;
+  border-radius: 8px;
+}
+
+.data-group {
+  margin-bottom: 24px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.group-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 18px;
+  background: linear-gradient(90deg, #f5f3ff, #eef2ff);
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.group-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.group-meta {
+  font-size: 13px;
+  color: #7c3aed;
+  background: #ede9fe;
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+
+.subgroup {
+  border-top: 1px solid #f3f4f6;
+}
+
+.subgroup:first-of-type {
+  border-top: none;
+}
+
+.subgroup-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 18px;
+  background: #fafafa;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.subgroup-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.subgroup-meta {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.group-table th {
+  background: #fcfcfd;
+  font-size: 13px;
+}
+
+.exam-group-header .group-desc {
+  font-size: 13px;
+  color: #6b7280;
+  margin-left: 12px;
+}
+
+.exam-group-header {
+  flex-wrap: wrap;
+}
+
+.exam-group-left {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.exam-group-sub {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.exam-subgroup-header {
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
