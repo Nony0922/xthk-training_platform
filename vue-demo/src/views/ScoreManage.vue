@@ -1,5 +1,7 @@
 <template>
   <div class="manage-page">
+    <PageSkeleton v-if="pageLoading" variant="grouped" />
+    <template v-else>
     <div class="toolbar">
       <button class="btn btn-primary" @click="handleAdd">新增成绩</button>
     </div>
@@ -45,6 +47,7 @@
         </div>
       </div>
     </div>
+    </template>
     <div v-if="dialogVisible" class="dialog-overlay" @click.self="dialogVisible = false">
       <div class="dialog">
         <div class="dialog-header">
@@ -90,9 +93,12 @@ import { getExamListApi } from '@/api/exam'
 import { getStudentListApi } from '@/api/student'
 import { getScopeModeFromRoute } from '@/composables/useTeacherScope'
 import { groupScoresByCourseExam } from '@/utils/groupTeachingData'
+import PageSkeleton from '@/components/PageSkeleton.vue'
+import { usePageLoading } from '@/composables/usePageLoading'
 
 const route = useRoute()
 const scopeMode = () => getScopeModeFromRoute(route)
+const { pageLoading, withLoading } = usePageLoading()
 
 const list = ref([])
 const dialogVisible = ref(false)
@@ -148,12 +154,10 @@ const resetForm = () => {
   remark: '' })
 }
 
-const loadList = async () => {
-  try {
-    const res = await getScoreListApi(scopeMode())
-    list.value = res.data || []
-  } catch (e) { alert(e.message) }
-}
+const loadList = () => withLoading(async () => {
+  const res = await getScoreListApi(scopeMode())
+  list.value = res.data || []
+})
 
 const handleAdd = () => {
   isEdit.value = false

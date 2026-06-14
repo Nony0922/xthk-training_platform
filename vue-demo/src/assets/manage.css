@@ -268,3 +268,123 @@
   gap: 8px;
 }
 
+/* 列表加载骨架屏 */
+@keyframes sk-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.page-skeleton {
+  padding: 4px 0;
+}
+
+.sk-block,
+.sk-cell {
+  background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%);
+  background-size: 200% 100%;
+  animation: sk-shimmer 1.2s ease-in-out infinite;
+  border-radius: 6px;
+}
+
+.sk-toolbar {
+  margin-bottom: 16px;
+}
+
+.sk-btn {
+  width: 96px;
+  height: 34px;
+}
+
+.sk-group {
+  margin-bottom: 24px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.sk-group-head,
+.sk-subgroup-head,
+.sk-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 18px;
+}
+
+.sk-group-head {
+  background: linear-gradient(90deg, #f5f3ff, #eef2ff);
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.sk-subgroup-head {
+  background: #fafafa;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.sk-title {
+  width: 160px;
+  height: 18px;
+}
+
+.sk-subtitle {
+  width: 120px;
+  height: 16px;
+}
+
+.sk-badge {
+  width: 72px;
+  height: 24px;
+  border-radius: 999px;
+}
+
+.sk-badge--sm {
+  width: 48px;
+  height: 20px;
+}
+
+.sk-table {
+  padding: 0 12px 12px;
+}
+
+.sk-table--compact {
+  padding: 0 18px 14px;
+}
+
+.sk-row {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 12px;
+  padding: 10px 6px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.sk-row--head .sk-cell {
+  height: 14px;
+  opacity: 0.7;
+}
+
+.sk-row:not(.sk-row--head) .sk-cell {
+  height: 12px;
+}
+
+.sk-card {
+  margin-bottom: 16px;
+  padding: 18px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+}
+
+.sk-card-head {
+  padding: 0 0 12px;
+}
+
+.sk-line {
+  height: 14px;
+  margin-bottom: 10px;
+}
+
+.sk-line--long { width: 100%; }
+.sk-line--medium { width: 72%; }
+.sk-line--short { width: 48%; margin-bottom: 0; }
+

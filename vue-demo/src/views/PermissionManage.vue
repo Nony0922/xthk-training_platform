@@ -1,5 +1,7 @@
 <template>
   <div class="manage-page">
+    <PageSkeleton v-if="pageLoading" />
+    <template v-else>
     <div class="page-desc">
       <p>管理系统用户账号及角色权限，支持新增、编辑、删除用户，并分配管理员、教师（任课教师 / 班主任）、家长等角色。</p>
     </div>
@@ -101,12 +103,17 @@
         </div>
       </div>
     </div>
+    </template>
   </div>
 </template>
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { getUserListApi, addUserApi, updateUserApi, deleteUserApi } from '@/api/user'
+import PageSkeleton from '@/components/PageSkeleton.vue'
+import { usePageLoading } from '@/composables/usePageLoading'
+
+const { pageLoading, withLoading } = usePageLoading()
 
 const list = ref([])
 const dialogVisible = ref(false)
@@ -165,14 +172,14 @@ const onRoleChange = () => {
   }
 }
 
-const loadList = async () => {
+const loadList = () => withLoading(async () => {
   try {
     const res = await getUserListApi()
     list.value = res.data || []
   } catch (e) {
     alert(e.message)
   }
-}
+})
 
 const handleAdd = () => {
   isEdit.value = false

@@ -1,5 +1,7 @@
 <template>
   <div class="manage-page">
+    <PageSkeleton v-if="pageLoading" />
+    <template v-else>
     <div class="toolbar">
       <button class="btn btn-primary" @click="handleAdd">新增班级</button>
     </div>
@@ -79,6 +81,7 @@
         </div>
       </div>
     </div>
+    </template>
   </div>
 </template>
 
@@ -86,6 +89,10 @@
 import { ref, reactive, onMounted } from 'vue'
 import { getClazzListApi, addClazzApi, updateClazzApi, deleteClazzApi } from '@/api/clazz'
 import { getTeacherListApi } from '@/api/teacher'
+import PageSkeleton from '@/components/PageSkeleton.vue'
+import { usePageLoading } from '@/composables/usePageLoading'
+
+const { pageLoading, withLoading } = usePageLoading()
 
 const list = ref([])
 const dialogVisible = ref(false)
@@ -139,12 +146,12 @@ const resetForm = () => {
   status: 1 })
 }
 
-const loadList = async () => {
+const loadList = () => withLoading(async () => {
   try {
     const res = await getClazzListApi()
     list.value = res.data || []
   } catch (e) { alert(e.message) }
-}
+})
 
 const handleAdd = () => {
   isEdit.value = false

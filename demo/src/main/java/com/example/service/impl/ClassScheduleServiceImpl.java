@@ -5,10 +5,7 @@ import com.example.mapper.ClassScheduleMapper;
 import com.example.service.ClassScheduleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class ClassScheduleServiceImpl extends TeacherScopedServiceSupport implements ClassScheduleService {
@@ -23,15 +20,7 @@ public class ClassScheduleServiceImpl extends TeacherScopedServiceSupport implem
         if (teacherId == null) {
             return List.of();
         }
-        Map<Integer, ClassSchedule> merged = new LinkedHashMap<>();
-        if (teacherLevel != null && teacherLevel == 2) {
-            List<Integer> classIds = classIds(userId, teacherLevel);
-            if (!classIds.isEmpty()) {
-                classScheduleMapper.findByClassIds(classIds, semester).forEach(s -> merged.put(s.getId(), s));
-            }
-        }
-        classScheduleMapper.findByTeacherId(teacherId, semester).forEach(s -> merged.put(s.getId(), s));
-        return new ArrayList<>(merged.values());
+        return classScheduleMapper.findByTeacherId(teacherId, semester);
     }
 
     @Override public List<String> findSemesters() { return classScheduleMapper.findSemesters(); }

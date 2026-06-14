@@ -1,5 +1,7 @@
 <template>
   <div class="ai-schedule-page">
+    <PageSkeleton v-if="pageLoading" variant="grouped" />
+    <template v-else>
     <div class="page-desc">
       <p>
         根据教师空闲时间、教室容量与班级学生人数，自动检测排课冲突，并调用
@@ -14,10 +16,10 @@
           <option value="">全部</option>
           <option v-for="s in semesters" :key="s" :value="s">{{ s }}</option>
         </select>
-        <button class="btn btn-primary" :disabled="loading || aiLoading" @click="runAiAnalysis">
+        <button class="btn btn-primary" :disabled="pageLoading || aiLoading" @click="runAiAnalysis">
           {{ aiLoading ? 'AI 分析中...' : 'AI 深度分析' }}
         </button>
-        <button class="btn" :disabled="loading || aiLoading" @click="loadAnalysis(false)">
+        <button class="btn" :disabled="pageLoading || aiLoading" @click="loadAnalysis(false)">
           刷新检测
         </button>
       </div>
@@ -102,12 +104,17 @@
         </div>
       </div>
     </div>
+    </template>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { getScheduleSemestersApi, analyzeScheduleAiApi } from '@/api/scheduleAi'
+import PageSkeleton from '@/components/PageSkeleton.vue'
+import { usePageLoading } from '@/composables/usePageLoading'
+
+const { pageLoading, withLoading } = usePageLoading()
 
 const weekdays = [
   { value: 1, label: '周一' },
@@ -121,7 +128,6 @@ const weekdays = [
 
 const semesters = ref([])
 const semester = ref('')
-const loading = ref(false)
 const aiLoading = ref(false)
 const analysis = ref(null)
 
@@ -201,18 +207,20 @@ const loadSemesters = async () => {
 }
 
 const loadAnalysis = async (includeAi = false) => {
+  const fetch = async () => {
+    const res = await analyzeScheduleAiApi(semester.value, includeAi)
+    analysis.value = res.data
+  }
   try {
     if (includeAi) {
       aiLoading.value = true
+      await fetch()
     } else {
-      loading.value = true
+      await withLoading(fetch)
     }
-    const res = await analyzeScheduleAiApi(semester.value, includeAi)
-    analysis.value = res.data
   } catch (e) {
     alert(e.message)
   } finally {
-    loading.value = false
     aiLoading.value = false
   }
 }

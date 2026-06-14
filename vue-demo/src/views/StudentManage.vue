@@ -1,5 +1,7 @@
 <template>
   <div class="manage-page">
+    <PageSkeleton v-if="pageLoading" variant="grouped" :show-toolbar="!readOnly" />
+    <template v-else>
     <div v-if="!readOnly" class="toolbar">
       <button class="btn btn-primary" @click="handleAdd">新增学生</button>
     </div>
@@ -42,6 +44,7 @@
         </table>
       </div>
     </div>
+    </template>
     <div v-if="!readOnly && dialogVisible" class="dialog-overlay" @click.self="dialogVisible = false">
       <div class="dialog">
         <div class="dialog-header">
@@ -106,10 +109,13 @@ import { getParentListApi } from '@/api/parent'
 import { useReadOnly } from '@/composables/useReadOnly'
 import { getScopeModeFromRoute } from '@/composables/useTeacherScope'
 import { groupByClass } from '@/utils/groupTeachingData'
+import PageSkeleton from '@/components/PageSkeleton.vue'
+import { usePageLoading } from '@/composables/usePageLoading'
 
 const route = useRoute()
 const readOnly = useReadOnly()
 const scopeMode = () => getScopeModeFromRoute(route)
+const { pageLoading, withLoading } = usePageLoading()
 
 const list = ref([])
 const dialogVisible = ref(false)
@@ -168,12 +174,10 @@ const resetForm = () => {
   status: 1 })
 }
 
-const loadList = async () => {
-  try {
-    const res = await getStudentListApi(scopeMode())
-    list.value = res.data || []
-  } catch (e) { alert(e.message) }
-}
+const loadList = () => withLoading(async () => {
+  const res = await getStudentListApi(scopeMode())
+  list.value = res.data || []
+})
 
 const handleAdd = () => {
   isEdit.value = false

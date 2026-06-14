@@ -233,6 +233,9 @@ const buildPayload = (publishToParent) => ({
 const usePreset = (text) => {
   question.value = text
   errorMsg.value = ''
+  const matched = classes.value.find((c) => text.includes(c.name))
+  classId.value = matched ? String(matched.id) : ''
+  studentId.value = ''
 }
 
 const runAnalyze = async (publishToParent) => {

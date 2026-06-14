@@ -1,5 +1,7 @@
 <template>
   <div class="manage-page">
+    <PageSkeleton v-if="pageLoading" variant="table" />
+    <template v-else>
     <div class="toolbar">
       <button class="btn btn-primary" @click="handleAdd">新增家访记录</button>
     </div>
@@ -32,6 +34,7 @@
         </tbody>
       </table>
     </div>
+    </template>
     <div v-if="dialogVisible" class="dialog-overlay" @click.self="dialogVisible = false">
       <div class="dialog">
         <div class="dialog-header">
@@ -86,6 +89,10 @@ import { ref, reactive, computed, onMounted } from 'vue'
 import { getHomeVisitListApi, addHomeVisitApi, updateHomeVisitApi, deleteHomeVisitApi } from '@/api/homeVisit'
 import { getStudentListApi } from '@/api/student'
 import { getTeacherListApi } from '@/api/teacher'
+import PageSkeleton from '@/components/PageSkeleton.vue'
+import { usePageLoading } from '@/composables/usePageLoading'
+
+const { pageLoading, withLoading } = usePageLoading()
 
 const list = ref([])
 const dialogVisible = ref(false)
@@ -149,12 +156,10 @@ const resetForm = () => {
   nextPlan: '' })
 }
 
-const loadList = async () => {
-  try {
-    const res = await getHomeVisitListApi()
-    list.value = res.data || []
-  } catch (e) { alert(e.message) }
-}
+const loadList = () => withLoading(async () => {
+  const res = await getHomeVisitListApi()
+  list.value = res.data || []
+})
 
 const handleAdd = () => {
   isEdit.value = false

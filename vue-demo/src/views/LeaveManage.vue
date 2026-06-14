@@ -1,5 +1,7 @@
 <template>
   <div class="manage-page">
+    <PageSkeleton v-if="pageLoading" />
+    <template v-else>
     <div class="table-container">
       <table class="data-table">
         <thead>
@@ -87,12 +89,17 @@
         </div>
       </div>
     </div>
+    </template>
   </div>
 </template>
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { getLeaveListApi, updateLeaveApi } from '@/api/leave'
+import PageSkeleton from '@/components/PageSkeleton.vue'
+import { usePageLoading } from '@/composables/usePageLoading'
+
+const { pageLoading, withLoading } = usePageLoading()
 
 const list = ref([])
 const dialogVisible = ref(false)
@@ -127,12 +134,12 @@ const getUser = () => {
   }
 }
 
-const loadList = async () => {
+const loadList = () => withLoading(async () => {
   try {
     const res = await getLeaveListApi()
     list.value = res.data || []
   } catch (e) { alert(e.message) }
-}
+})
 
 const handleApprove = (item) => {
   isApprove.value = true

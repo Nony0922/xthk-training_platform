@@ -1,5 +1,11 @@
 <template>
   <div class="manage-page">
+    <PageSkeleton
+      v-if="pageLoading"
+      :variant="readOnly ? 'cards' : 'table'"
+      :show-toolbar="!readOnly"
+    />
+    <template v-else>
     <div v-if="!readOnly" class="toolbar">
       <button class="btn btn-primary" @click="handleAdd">新增通知公告</button>
     </div>
@@ -51,6 +57,7 @@
           </tbody>
         </table>
       </div>
+    </template>
     </template>
 
     <div v-if="detailVisible" class="dialog-overlay" @click.self="detailVisible = false">
@@ -127,8 +134,11 @@
 import { ref, reactive, computed, onMounted } from 'vue'
 import { getAnnouncementListApi, addAnnouncementApi, updateAnnouncementApi, deleteAnnouncementApi } from '@/api/announcement'
 import { useReadOnly } from '@/composables/useReadOnly'
+import PageSkeleton from '@/components/PageSkeleton.vue'
+import { usePageLoading } from '@/composables/usePageLoading'
 
 const readOnly = useReadOnly()
+const { pageLoading, withLoading } = usePageLoading()
 
 const list = ref([])
 const dialogVisible = ref(false)
@@ -189,12 +199,10 @@ const resetForm = () => {
   publishTime: '' })
 }
 
-const loadList = async () => {
-  try {
-    const res = await getAnnouncementListApi()
-    list.value = res.data || []
-  } catch (e) { alert(e.message) }
-}
+const loadList = () => withLoading(async () => {
+  const res = await getAnnouncementListApi()
+  list.value = res.data || []
+})
 
 const handleView = (item) => {
   detailItem.value = { ...item }

@@ -443,6 +443,7 @@ JOIN (
   SELECT '张小洋', 2, 3, '2025-03-03', 2, 1 UNION ALL
   SELECT '张小洋', 2, 3, '2025-03-10', 1, 1
 ) c ON s.name = c.n AND s.class_id = c.class_id;
+-- 一年级1班（class_id=1）含语文 25 条 + 英语口语 6 条，供 AI 预设「统计一年级1班各考勤状态的人数分布」
 
 INSERT INTO abnormal_attendance (attendance_id, student_id, abnormal_type, description, handle_status)
 SELECT a.id, s.id, 2, '迟到15分钟', 0

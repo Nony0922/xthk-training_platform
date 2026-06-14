@@ -1,7 +1,9 @@
 <template>
   <div class="teacher-schedule-page">
+    <PageSkeleton v-if="pageLoading" variant="grouped" />
+    <template v-else>
     <div class="page-desc">
-      <p>{{ pageTip }}</p>
+      <p>展示您本人负责授课的全部课程安排，按星期与时间排列，方便确认每节课的班级与教室。</p>
     </div>
 
     <div class="toolbar">
@@ -10,13 +12,13 @@
         <option value="">全部学期</option>
         <option v-for="s in semesters" :key="s" :value="s">{{ s }}</option>
       </select>
-      <button class="btn btn-primary" :disabled="loading" @click="loadSchedules">
-        {{ loading ? '加载中...' : '刷新' }}
+      <button class="btn btn-primary" :disabled="pageLoading" @click="loadSchedules">
+        {{ pageLoading ? '加载中...' : '刷新' }}
       </button>
       <span class="stat-tag">共 {{ schedules.length }} 节课</span>
     </div>
 
-    <div v-if="!loading && !schedules.length" class="empty-tip">
+    <div v-if="!pageLoading && !schedules.length" class="empty-tip">
       暂无课程表数据，请联系管理员在排课系统中安排课程。
     </div>
 
@@ -38,8 +40,7 @@
                   <div
                     v-for="item in getCellSchedules(day.value, slot.key)"
                     :key="item.id"
-                    class="schedule-block"
-                    :class="{ mine: isMyLesson(item) }"
+                    class="schedule-block mine"
                   >
                     <div class="block-title">{{ item.courseName }}</div>
                     <div class="block-meta">{{ item.className }} · {{ item.teacherName }}</div>
@@ -50,16 +51,12 @@
             </tbody>
           </table>
         </div>
-        <div v-if="isHeadTeacher" class="legend">
-          <span><i class="dot mine"></i>我授课</span>
-          <span><i class="dot other"></i>本班其他课程</span>
-        </div>
       </div>
 
       <div class="list-panel">
         <div class="panel-title">课程列表</div>
         <div class="schedule-list">
-          <div v-for="item in sortedSchedules" :key="item.id" class="list-item" :class="{ mine: isMyLesson(item) }">
+          <div v-for="item in sortedSchedules" :key="item.id" class="list-item mine">
             <div class="list-day">{{ weekdayText(item.weekday) }}</div>
             <div class="list-body">
               <div class="list-title">{{ item.courseName }}</div>
@@ -70,12 +67,17 @@
         </div>
       </div>
     </div>
+    </template>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { getScheduleListApi, getScheduleSemestersApi } from '@/api/schedule'
+import PageSkeleton from '@/components/PageSkeleton.vue'
+import { usePageLoading } from '@/composables/usePageLoading'
+
+const { pageLoading, withLoading } = usePageLoading()
 
 const weekdays = [
   { value: 1, label: '周一' },
@@ -87,28 +89,9 @@ const weekdays = [
   { value: 7, label: '周日' }
 ]
 
-const user = (() => {
-  try {
-    return JSON.parse(localStorage.getItem('loginUser'))
-  } catch {
-    return null
-  }
-})()
-
-const isHeadTeacher = computed(() => user?.role === 'teacher' && user?.teacherLevel === 2)
-
-const pageTip = computed(() => {
-  if (isHeadTeacher.value) {
-    return '展示您管理班级的完整课表，以及您本人授课的安排，方便掌握班级上课节奏并确认自己的授课时间。'
-  }
-  return '展示您本人负责授课的全部课程安排，按星期与时间排列，方便确认每节课的班级与教室。'
-})
-
 const semesters = ref([])
 const semester = ref('')
-const loading = ref(false)
 const schedules = ref([])
-const myTeacherName = ref(user?.name || '')
 
 const sortedSchedules = computed(() => {
   return [...schedules.value].sort((a, b) => {
@@ -133,8 +116,6 @@ const shortTime = (time) => (time || '').substring(0, 5)
 
 const weekdayText = (weekday) => weekdays.find(d => d.value === weekday)?.label || '-'
 
-const isMyLesson = (item) => item.teacherName === myTeacherName.value
-
 const getCellSchedules = (weekday, slotKey) => {
   return schedules.value.filter(s => {
     const key = `${shortTime(s.startTime)}-${shortTime(s.endTime)}`
@@ -154,18 +135,11 @@ const loadSemesters = async () => {
   }
 }
 
-const loadSchedules = async () => {
-  try {
-    loading.value = true
-    const params = semester.value ? { semester: semester.value } : {}
-    const res = await getScheduleListApi(params)
-    schedules.value = res.data || []
-  } catch (e) {
-    alert(e.message)
-  } finally {
-    loading.value = false
-  }
-}
+const loadSchedules = () => withLoading(async () => {
+  const params = semester.value ? { semester: semester.value } : {}
+  const res = await getScheduleListApi(params)
+  schedules.value = res.data || []
+})
 
 onMounted(async () => {
   await loadSemesters()
@@ -322,31 +296,6 @@ onMounted(async () => {
   color: #6b7280;
   margin-top: 2px;
   font-size: 12px;
-}
-
-.legend {
-  display: flex;
-  gap: 16px;
-  margin-top: 12px;
-  font-size: 12px;
-  color: #6b7280;
-}
-
-.dot {
-  display: inline-block;
-  width: 10px;
-  height: 10px;
-  border-radius: 2px;
-  margin-right: 6px;
-  vertical-align: middle;
-}
-
-.dot.mine {
-  background: #7c3aed;
-}
-
-.dot.other {
-  background: #9ca3af;
 }
 
 .schedule-list {

@@ -40,7 +40,7 @@
         <!-- 教师菜单 -->
         <template v-if="user?.role === 'teacher'">
           <div class="nav-section">
-            <div class="section-label">任课老师功能</div>
+            <div class="section-label">任课教师功能</div>
             <router-link
               v-for="item in teacherCommonMenus"
               :key="item.path"
@@ -154,7 +154,7 @@ const roleText = computed(() => {
   const u = user.value
   if (!u) return ''
   if (u.role === 'admin') return '管理员'
-  if (u.role === 'teacher') return u.teacherLevel === 2 ? '班主任' : '教师'
+  if (u.role === 'teacher') return u.teacherLevel === 2 ? '班主任' : '任课教师'
   return u.role
 })
 

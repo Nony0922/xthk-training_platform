@@ -1,5 +1,7 @@
 <template>
   <div class="manage-page">
+    <PageSkeleton v-if="pageLoading" />
+    <template v-else>
     <div v-if="!readOnly" class="toolbar">
       <button class="btn btn-primary" @click="handleAdd">新增课程</button>
     </div>
@@ -125,6 +127,7 @@
         </div>
       </div>
     </div>
+    </template>
   </div>
 </template>
 
@@ -133,6 +136,10 @@ import { ref, reactive, onMounted } from 'vue'
 import { getCourseListApi, addCourseApi, updateCourseApi, deleteCourseApi } from '@/api/course'
 import { getTeacherListApi } from '@/api/teacher'
 import { useReadOnly } from '@/composables/useReadOnly'
+import PageSkeleton from '@/components/PageSkeleton.vue'
+import { usePageLoading } from '@/composables/usePageLoading'
+
+const { pageLoading, withLoading } = usePageLoading()
 
 const readOnly = useReadOnly()
 
@@ -209,12 +216,12 @@ const resetForm = () => {
   status: 1 })
 }
 
-const loadList = async () => {
+const loadList = () => withLoading(async () => {
   try {
     const res = await getCourseListApi()
     list.value = res.data || []
   } catch (e) { alert(e.message) }
-}
+})
 
 const handleAdd = () => {
   isEdit.value = false

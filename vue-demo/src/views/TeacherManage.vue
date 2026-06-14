@@ -1,5 +1,7 @@
 <template>
   <div class="manage-page">
+    <PageSkeleton v-if="pageLoading" />
+    <template v-else>
     <div class="toolbar">
       <button class="btn btn-primary" @click="handleAdd">新增教师</button>
     </div>
@@ -95,12 +97,17 @@
         </div>
       </div>
     </div>
+    </template>
   </div>
 </template>
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { getTeacherListApi, addTeacherApi, updateTeacherApi, deleteTeacherApi } from '@/api/teacher'
+import PageSkeleton from '@/components/PageSkeleton.vue'
+import { usePageLoading } from '@/composables/usePageLoading'
+
+const { pageLoading, withLoading } = usePageLoading()
 
 
 const list = ref([])
@@ -159,12 +166,12 @@ const resetForm = () => {
   status: 1 })
 }
 
-const loadList = async () => {
+const loadList = () => withLoading(async () => {
   try {
     const res = await getTeacherListApi()
     list.value = res.data || []
   } catch (e) { alert(e.message) }
-}
+})
 
 const handleAdd = () => {
   isEdit.value = false

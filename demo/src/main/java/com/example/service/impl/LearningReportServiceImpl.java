@@ -208,12 +208,28 @@ public class LearningReportServiceImpl implements LearningReportService {
         ctx.classId = request.getClassId();
         ctx.studentId = request.getStudentId();
 
+        if (ctx.classId == null && StringUtils.hasText(request.getQuestion())) {
+            ctx.classId = resolveClassIdFromQuestion(request.getQuestion());
+        }
+
         if ("teacher".equals(request.getCreatorRole()) && request.getScopeUserId() != null) {
             ctx.allowedClassIds = teacherScopeService.resolveClassIds(
                     request.getScopeUserId(), request.getTeacherLevel());
             ctx.teacherId = teacherScopeService.resolveTeacherId(request.getScopeUserId());
         }
         return ctx;
+    }
+
+    private Integer resolveClassIdFromQuestion(String question) {
+        List<Map<String, Object>> classes = jdbcTemplate.queryForList("SELECT id, name FROM clazz ORDER BY id");
+        String q = question.trim();
+        for (Map<String, Object> row : classes) {
+            String name = String.valueOf(row.get("name"));
+            if (StringUtils.hasText(name) && q.contains(name)) {
+                return ((Number) row.get("id")).intValue();
+            }
+        }
+        return null;
     }
 
     private SqlGeneration generateSqlWithAi(String question, ScopeContext scope) throws Exception {
@@ -387,7 +403,8 @@ public class LearningReportServiceImpl implements LearningReportService {
                     FROM attendance a
                     JOIN student s ON a.student_id = s.id
                     JOIN clazz c ON s.class_id = c.id
-                    WHERE 1=1
+                    GROUP BY a.status
+                    ORDER BY a.status
                     """, scope, "s.class_id", "s.id");
         }
         if (q.contains("平均") && q.contains("成绩")) {
@@ -432,7 +449,7 @@ public class LearningReportServiceImpl implements LearningReportService {
     }
 
     private String applyScope(String baseSql, ScopeContext scope, String classColumn, String studentColumn) {
-        StringBuilder sql = new StringBuilder(baseSql.trim());
+        String sql = baseSql.trim();
         List<String> conditions = new ArrayList<>();
         if (scope.classId != null) {
             conditions.add(classColumn + " = " + scope.classId);
@@ -443,16 +460,28 @@ public class LearningReportServiceImpl implements LearningReportService {
             conditions.add(classColumn + " IN (" + ids + ")");
         }
         if (!conditions.isEmpty()) {
-            if (sql.toString().toLowerCase().contains(" where ")) {
-                sql.append(" AND ").append(String.join(" AND ", conditions));
-            } else {
-                sql.append(" WHERE ").append(String.join(" AND ", conditions));
+            String clause = String.join(" AND ", conditions);
+            String lower = sql.toLowerCase();
+            int insertAt = sql.length();
+            for (String keyword : new String[]{" group by ", " order by ", " having ", " limit "}) {
+                int idx = lower.indexOf(keyword);
+                if (idx >= 0 && idx < insertAt) {
+                    insertAt = idx;
+                }
             }
+            StringBuilder builder = new StringBuilder(sql.substring(0, insertAt).trim());
+            if (lower.substring(0, insertAt).contains(" where ")) {
+                builder.append(" AND ").append(clause);
+            } else {
+                builder.append(" WHERE ").append(clause);
+            }
+            builder.append(sql.substring(insertAt));
+            sql = builder.toString();
         }
-        if (!sql.toString().toLowerCase().contains(" limit ")) {
-            sql.append(" LIMIT 500");
+        if (!sql.toLowerCase().contains(" limit ")) {
+            sql = sql + " LIMIT 500";
         }
-        return sql.toString();
+        return sql;
     }
 
     private QueryData executeQuery(String sql) {
